@@ -24,17 +24,17 @@ http://ref12.github.io/Codex
 
 3. Deploy the wasm binaries
 
-    ` ./deploywasm.ps1 ` - deploys static site to `bin\wasm` folder by default
+    ` ./deploywasm.ps1 ` - deploys static site to `bin/web` folder by default
 
 4. Build repo and generate binlog: ` ./build.ps1 `
 
 5. Analyze repo and binlogs to produce analysis outputs: ` ./analyze.ps1 `
 
-6. Create or update index ` ./ingest.ps1 `
+6. Create or update index ` ./ingest.ps1 -OutputDir bin/web/index`
 
 7. Test locally using ` dotnet serve `
 
-    `dotnet serve --directory bin/wasm`
+    `dotnet serve -p 58226 -S --directory bin/web`
 
 ## Features
 * Semantic analysis of C#, VB, and MSBuild

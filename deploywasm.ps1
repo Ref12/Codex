@@ -7,4 +7,4 @@ param(
     [string[]]$RemainingArgs
 )
 
-& "$CodexExeDir/Codex.exe" deployweb -s "$WasmPublishDir/wwwroot" -t "$OutputDir" -h pages -m wasm -i index @RemainingArgs
+& "$CodexExeDir/Codex.exe" deployweb -s "$WasmPublishDir/wwwroot" -t "$OutputDir" -h pages -m wasm -i "index" @RemainingArgs
