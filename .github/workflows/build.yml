@@ -21,6 +21,10 @@ jobs:
       env:
         DisableWorkloads: 'true'
 
+    - name: Publish Exe
+      shell: pwsh
+      run: dotnet publish src/Codex.Application/Codex.Application.csproj -o bin/exe
+
     - name: Analyze
       shell: pwsh
       run: ./analyze.ps1
