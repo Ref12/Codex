@@ -1,4 +1,4 @@
-name: Build on Windows
+name: Build And Publish
 
 on:
   workflow_dispatch:
