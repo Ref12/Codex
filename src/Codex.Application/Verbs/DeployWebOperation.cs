@@ -117,24 +117,33 @@ public record DeployWebOperation : OperationBase
 
         var targetFile = Path.Combine(TargetDirectory, target);
 
-        Logger.WriteLine($"Copying '{source}' to '{target}'...");
+        Logger.WriteLine($"Copying '{source}' to '{targetFile}'...");
         if (transformText != null)
         {
             var text = SourceFs.FS.OpenFile(source).ReadAllText();
             text = transformText.Invoke(text);
             File.WriteAllText(targetFile, text);
         }
+        else
+        {
+            using var sourceStream = SourceFs.FS.OpenFile(source);
+            using var targetStream = File.OpenWrite(targetFile);
+            sourceStream.CopyTo(targetStream, 1 << 16);
+        }
 
-        Logger.WriteLine($"Copied '{source}' to '{target}'.");
+        Logger.WriteLine($"Copied '{source}' to '{targetFile}'.");
 
         if (generateCompressionVariants)
         {
             void compress(Func<Stream, Stream> getCompressionStream, string ext)
             {
+                var cmpTargetFile = $"{targetFile}.{ext}";
                 using var sourceStream = File.OpenRead(targetFile);
-                using var targetStream = getCompressionStream(File.OpenWrite($"{targetFile}.{ext}"));
+                using var targetStream = getCompressionStream(File.OpenWrite(cmpTargetFile));
 
                 sourceStream.CopyTo(targetStream, 1 << 16);
+
+                Logger.WriteLine($"Created compressed file: '{cmpTargetFile}'.");
             }
 
             compress(s => new BrotliStream(s, CompressionLevel.Optimal), "br");
