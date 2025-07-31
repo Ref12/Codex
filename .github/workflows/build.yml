@@ -1,0 +1,68 @@
+name: Build on Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # - name: Set up PowerShell
+      #   uses: actions/setup-powershell@v2
+
+      - name: Set up Wasm
+        shell: pwsh
+        working-directory: src/Codex.Web.Wasm
+        run: |
+          dotnet workload install wasm-tools
+
+          dotnet workload install wasm-experimental
+        
+      - name: Publish Wasm
+        shell: pwsh
+        run: dotnet publish src/Codex.Web.Wasm/Codex.Web.Wasm.csproj -o bin/wasm
+
+      - name: Upload Wasm Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: codex.web.wasm
+          path: bin/wasm
+
+      - name: Publish Exe
+        shell: pwsh
+        run: dotnet publish src/Codex.Application/Codex.Application.csproj -o bin/exe
+
+      - name: Upload Exe Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: codex
+          path: bin/exe
+
+      - name: Create WASM deployment
+        shell: pwsh
+        run: ./deploywasm.ps1
+
+      - name: Build
+        shell: pwsh
+        run: ./build.ps1
+
+      - name: Analyze
+        shell: pwsh
+        run: ./analyze.ps1
+
+      - name: Ingest
+        shell: pwsh
+        run: ./ingest.ps1 -OutputDir bin/wasm/index
+
+
+      # - name: Set up PowerShell
+      #   uses: actions/setup-powershell@v2
+
