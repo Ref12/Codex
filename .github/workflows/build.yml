@@ -12,57 +12,72 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      # - name: Set up PowerShell
-      #   uses: actions/setup-powershell@v2
+    - name: Build
+      shell: pwsh
+      run: ./build.ps1
+      env:
+        DisableWorkloads: 'true'
 
-      - name: Set up Wasm
-        shell: pwsh
-        working-directory: src/Codex.Web.Wasm
-        run: |
-          dotnet workload install wasm-tools
+    - name: Analyze
+      shell: pwsh
+      run: ./analyze.ps1
 
-          dotnet workload install wasm-experimental
-        
-      - name: Publish Wasm
-        shell: pwsh
-        run: dotnet publish src/Codex.Web.Wasm/Codex.Web.Wasm.csproj -o bin/wasm
+    - name: Ingest
+      shell: pwsh
+      run: ./ingest.ps1 -OutputDir bin/web/index
 
-      - name: Upload Wasm Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: codex.web.wasm
-          path: bin/wasm
+    - name: Upload Index Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: index
+        path: bin/web/index
 
-      - name: Publish Exe
-        shell: pwsh
-        run: dotnet publish src/Codex.Application/Codex.Application.csproj -o bin/exe
+  publish:
+    runs-on: windows-latest
 
-      - name: Upload Exe Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: codex
-          path: bin/exe
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Create WASM deployment
-        shell: pwsh
-        run: ./deploywasm.ps1
+    # - name: Set up PowerShell
+    #   uses: actions/setup-powershell@v2
 
-      - name: Build
-        shell: pwsh
-        run: ./build.ps1
+    - name: Set up Wasm
+      shell: pwsh
+      working-directory: src/Codex.Web.Wasm
+      run: |
+        dotnet workload install wasm-tools
 
-      - name: Analyze
-        shell: pwsh
-        run: ./analyze.ps1
+        dotnet workload install wasm-experimental
+      
+    - name: Publish Wasm
+      shell: pwsh
+      run: dotnet publish src/Codex.Web.Wasm/Codex.Web.Wasm.csproj -o bin/wasm
 
-      - name: Ingest
-        shell: pwsh
-        run: ./ingest.ps1 -OutputDir bin/wasm/index
+    - name: Upload Wasm Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: codex.web.wasm
+        path: bin/wasm/wwwroot
+
+    - name: Publish Exe
+      shell: pwsh
+      run: dotnet publish src/Codex.Application/Codex.Application.csproj -o bin/exe
+
+    - name: Upload Exe Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: codex
+        path: bin/exe
+
+    - name: Create WASM deployment
+      shell: pwsh
+      run: ./deploywasm.ps1
 
 
-      # - name: Set up PowerShell
-      #   uses: actions/setup-powershell@v2
+    # - name: Set up PowerShell
+    #   uses: actions/setup-powershell@v2
 
