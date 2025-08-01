@@ -58,7 +58,7 @@
 
     <_AllProjects Include="@(CodexDependency ->'$(RepoRoot)\src\build\%(Identity)\dep.proj')" ReferenceOutputAssembly="false" />
     <_AllProjects Include="@(ContentReference ->'$(RepoRoot)\src\%(SourceRelativeRoot)\%(Identity)\%(Identity).contentprj')" />
-    <_AllProjects Include="@(CodexReference ->'$(RepoRoot)\src\%(SourceRelativeRoot)\%(Identity)\%(Identity).%(ProjectExtension)')" />
+    <_AllProjects Include="@(CodexReference ->'$(RepoRoot)\src\%(SourceRelativeRoot)\%(Identity)\%(Identity).%(ProjectExtension)')" Folder="" />
     <_AllProjects Include="@(LuceneReference ->'$(LuceneRepoRoot)\src\%(Identity)\%(Identity).csproj')" />
     <_AllProjects Include="@(ZoneTreeReference ->'$(RepoRoot)\zonetree\src\%(Identity)\%(Identity).csproj')" />
 

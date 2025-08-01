@@ -180,19 +180,14 @@ public record CodexTestBase : IDisposable
         var options = new CodexAppOptions();
         options = updateOptions?.Invoke(options) ?? options;
 
-        if (indexDirectory.StartsWith("https://"))
+        if (PathUtilities.ToUriOrPath(indexDirectory, out var uri, out var path))
         {
+            // For uri's we need to use paging logic
             options.UsePaging = true;
             options.ConfigurePaging = options.ConfigurePaging.ApplyBefore(pc => pc with
             {
                 CacheLimit = 100_000,
             });
-        }
-
-        if (PathUtilities.ToUriOrPath(indexDirectory, out var uri, out var path))
-        {
-            // For uri's we need to use paging logic
-            options.UsePaging = true;
         }
 
         ICodex getCodex()

@@ -154,7 +154,7 @@ namespace Codex.Lucene.Search
 
         private static Url GetAddress(Uri uri)
         {
-            Url result = uri;
+            Url result = uri.EnsureTrailingSlash();
             return result;
         }
 

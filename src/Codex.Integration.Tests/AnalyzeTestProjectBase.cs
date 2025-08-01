@@ -80,12 +80,18 @@ public record AnalyzeTestProjectBase(ITestOutputHelper Output) : CodexTestBase(O
         });
     }
 
+    protected virtual void PreconfigureOptions(AnalyzeTestProjectOptions options)
+    {
+
+    }
+
     public async Task<AnalyzeOperation> RunAnalyzeTestProjectAnalysis(
         Func<AnalyzeTestProjectOptions, AnalyzeTestProjectOptions> configureOptions = null,
         AsyncOut<AnalyzeTestProjectOptions> optionsOut = null,
         [CallerMemberName] string caller = null)
     {
         var options = new AnalyzeTestProjectOptions();
+        PreconfigureOptions(options);
         options = configureOptions?.Invoke(options) ?? options;
         optionsOut?.Set(options);
 

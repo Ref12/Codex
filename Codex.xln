@@ -3,7 +3,7 @@
     <!-- Allow all projects -->
     <SolutionSaveLocation>$(MSBuildThisFileDirectory)\src\Codex.sln</SolutionSaveLocation>
     <ProjectFilterLocal>$(ProjectFilter)</ProjectFilterLocal>
-    <DisplayName>$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildThisFileFullPath)))))</DisplayName>
+    <SolutionDisplayName>$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildThisFileFullPath)))))</SolutionDisplayName>
   </PropertyGroup>
 
   <ItemDefinitionGroup>
