@@ -161,6 +161,7 @@ namespace Codex.Analysis
             {
                 var (ns, defs) = group;
                 var container = new XElement("Namespace").AddAttribute("Name", ns);
+                el.Add(container);
 
                 foreach (var definition in defs)
                 {
