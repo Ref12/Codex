@@ -7,4 +7,6 @@ param(
     [string[]]$RemainingArgs
 )
 
+$ErrorActionPreference = "Stop"
+
 & "$CodexExeDir/Codex.exe" deployweb -s "$WasmPublishDir/wwwroot" -t "$OutputDir" -h pages -m wasm -i "index" @RemainingArgs

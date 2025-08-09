@@ -7,4 +7,7 @@ param(
     [string[]]$RemainingArgs
 )
 
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $true
+
 & "$CodexExeDir\Codex.exe" ingest --in "$AnalysisDir" --out "$OutputDir" @RemainingArgs

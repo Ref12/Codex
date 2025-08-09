@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>annotations</Nullable>
+    <OutputType>Exe</OutputType>
+    <PackageId>Ref12.Codex.Automation.Workflow</PackageId>
+    <PackageProjectUrl>https://github.com/Ref12/Codex/</PackageProjectUrl>
+    <PackageDescription>Tool used to run codex indexing workflows as a part of builds in Azure DevOps pipelines</PackageDescription>
+    <Authors>Ref12</Authors>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>codextask</ToolCommandName>
+    <PackageVersion>2.0.0</PackageVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CodexReference Include="Codex.Application" />
+    <CodexReference Include="Codex.Build.Tasks" />
+    <CodexReference Include="Codex.Downloader" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Management.Automation" />
+  </ItemGroup>
+
+</Project>

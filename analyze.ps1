@@ -8,4 +8,7 @@ param(
     [string[]]$RemainingArgs
 )
 
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $true
+
 & "$CodexExeDir\Codex.exe" analyze --binLogSearchDirectory "$BinLogPath" --clean --noMsBuild --out "$AnalysisDir" --path "$RepoRoot" @RemainingArgs

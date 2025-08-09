@@ -4,4 +4,7 @@ param(
     [string[]]$RemainingArgs
 )
 
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $true
+
 & dotnet build "$PSScriptRoot/Codex.xln" /bl @RemainingArgs

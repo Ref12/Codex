@@ -33,6 +33,7 @@
     <CodexReference Include="Codex.Web.Wasm" Folder="web" Condition="'$(SkipWeb)' != 'true'" Web="1" Wasm="1" />
 
     <CodexReference Include="Codex.Lucene" />
+    <CodexReference Include="Codex.Automation.Workflow" Pack="1" Exe="1" />
     <CodexReference Include="Codex.Application" Pack="1" Exe="1" />
     <CodexReference Include="Codex.Storage" />
 

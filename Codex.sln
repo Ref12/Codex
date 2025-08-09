@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codex.Analysis", "src\Codex
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codex.Application", "src\Codex.Application\Codex.Application.csproj", "{AB4E4125-B838-4F67-9918-3814F72792A5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codex.Automation.Workflow", "src\Codex.Automation.Workflow\Codex.Automation.Workflow.csproj", "{7B3AB8B3-4EB7-A59C-7B3A-B8B34EB7A59C}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codex.Decompilation", "src\Codex.Decompilation\Codex.Decompilation.csproj", "{A0751673-A4A7-4B38-B232-376A6FC10E97}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codex.Framework.Generator", "src\Codex.Framework.Generator\Codex.Framework.Generator.csproj", "{EEDE97E4-1AB5-4E64-92FD-0F20C18C7DD5}"
@@ -127,6 +129,11 @@ Global
 		{AB4E4125-B838-4F67-9918-3814F72792A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB4E4125-B838-4F67-9918-3814F72792A5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AB4E4125-B838-4F67-9918-3814F72792A5}.ReleaseWithDoc|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B3AB8B3-4EB7-A59C-7B3A-B8B34EB7A59C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B3AB8B3-4EB7-A59C-7B3A-B8B34EB7A59C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B3AB8B3-4EB7-A59C-7B3A-B8B34EB7A59C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B3AB8B3-4EB7-A59C-7B3A-B8B34EB7A59C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B3AB8B3-4EB7-A59C-7B3A-B8B34EB7A59C}.ReleaseWithDoc|Any CPU.ActiveCfg = Debug|Any CPU
 		{A0751673-A4A7-4B38-B232-376A6FC10E97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A0751673-A4A7-4B38-B232-376A6FC10E97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0751673-A4A7-4B38-B232-376A6FC10E97}.Release|Any CPU.ActiveCfg = Release|Any CPU

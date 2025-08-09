@@ -23,6 +23,14 @@ public static class CodexConstants
 
     public const string IndicesDirectoryName = "indices";
 
+    public const string BuildIndexArtifactName = BuildTags.CodexIndexOutputs;
+
+    public const string BuildAnalysisArtifactName = BuildTags.CodexOutputs;
+
+    public const string BinLogArtifactName = "CodexBinLogOutputs";
+
+    public const string DebugArtifactName = "CodexDebugOutputs";
+
     public const string ZipPasswordEnvVarName = "Codex_ZipPassword";
     public const string ZipEncryptedPasswordCommentPrefix = "ZIP_ENC_PASS=[[";
     public const string ZipPasswordPublicKeyEnvVarName = "Codex_ZipPassword_Public";
