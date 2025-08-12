@@ -39,6 +39,18 @@ jobs:
         name: index
         path: bin/web/index
 
+  test:
+    runs-on: windows-latest
+    needs: build
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Run Tests
+      shell: pwsh
+      run: dotnet test src/Codex.Integration.Tests/Codex.Integration.Tests.csproj
+
   publish:
     runs-on: windows-latest
 
