@@ -1,4 +1,4 @@
-﻿namespace Codex.Utilities
+namespace Codex.Utilities
 {
     public record ChunkBuilder(uint DesiredChunkSize, bool AutoNext = true, int ChunkWindowSize = 13)
     {

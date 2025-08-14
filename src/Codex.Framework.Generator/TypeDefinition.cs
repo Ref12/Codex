@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.Reflection;
 using Codex.Utilities;
 using Meziantou.Framework.CodeDom;

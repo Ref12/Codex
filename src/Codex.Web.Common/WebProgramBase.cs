@@ -1,28 +1,37 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Codex.Configuration;
 using Codex.Lucene.Search;
+using Codex.Sdk;
 using Codex.Sdk.Search;
 using Codex.Search;
 using Codex.Utilities;
 using Codex.View;
 using Codex.Web.Wasm;
 using Codex.Workspaces;
+using static Codex.Lucene.Search.PagingHelpers;
 
 namespace Codex.Web.Common;
 
-public record WebProgramBase(string AutoIndexRoot) : IRepositoryIndexer
+public class WebProgramBase(WebProgramArguments args) : CodexProgramBase, IRepositoryIndexer
 {
     public virtual MainController App { get; } = new MainController();
     public virtual IHttpClient Client { get; set; } = new HttpClientWrapper();
 
-    public string IndexSourceUrl { get; set; }
+    public IndexSourceLocation IndexSource { get; private set; }
+    public string ResolvedIndexSourceUrl { get; private set; }
     public virtual HttpMessageHandler MessageHandler { get; } = new HttpClientHandler();
     public virtual WebViewModelController Controller { get; } = new WebViewModelController();
 
-    public async Task RunAsync(ViewModelAddress? address)
+    public async Task RunAsync(ViewModelAddress? address = null)
     {
         Controller.RepositoryIndexer = this;
+
+        var client = new QueryAugmentingHttpClientWrapper(GetClient(default));
+        client.BaseAddress = GetBaseAddress();
+        SdkFeatures.HttpClient = client;
+        SdkFeatures.GetClient = GetClient;
 
         var codex = await GetCodexAsync(address);
         App.Controller = Controller;
@@ -33,6 +42,22 @@ public record WebProgramBase(string AutoIndexRoot) : IRepositoryIndexer
         //}
     }
 
+    public CodexPage GetPage()
+    {
+        return new CodexPage(App.CodexService, App);
+    }
+
+    private Uri GetBaseAddress()
+    {
+        return args.RootUrl;
+    }
+
+    protected virtual IInnerHttpClient GetClient(HttpClientKind kind)
+    {
+        var client = new HttpClientWrapper();
+        return client;
+    }
+
     public async Task<ICodex> GetCodexAsync(ViewModelAddress? address)
     {
         var codex = await GetCodexAsync();
@@ -40,22 +65,85 @@ public record WebProgramBase(string AutoIndexRoot) : IRepositoryIndexer
         return codex;
     }
 
-    public async Task<ICodex> GetCodexAsync()
+    public virtual async Task<ICodex> GetCodexAsync()
+    {
+        string lastReloadHeaderValue = null;
+        Timestamp lastTimestamp = Timestamp.New();
+
+        // Create a reloadable codex so that 
+        var reloadingCodex = new ReloadableCodex(
+            LoadCodexAsync: (reloadCodex, args) => GetCodexCoreAsync(configRef =>
+            {
+                var config = configRef.Value;
+
+                config.OnClientResponse = (kind, response) =>
+                {
+                    switch (kind)
+                    {
+                        case HttpClientKind.Index:
+                            break;
+                        case HttpClientKind.Entity:
+                            if (IndexSource?.EntityFilesTriggerReload != true)
+                            {
+                                return;
+                            }
+                            break;
+                        default:
+                            return;
+                    }
+
+                    bool shouldReload = false;
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        shouldReload = true;
+                    }
+                    else if (IndexSource?.ReloadHeader is { } reloadHeaderName)
+                    {
+                        if (response.Headers.TryGetValues(reloadHeaderName, out var values)
+                            || response.Content.Headers.TryGetValues(reloadHeaderName, out values))
+                        {
+                            var reloadHeaderValue = string.Join("|", values);
+                            lastReloadHeaderValue ??= reloadHeaderValue;
+                            if (lastReloadHeaderValue != reloadHeaderValue)
+                            {
+                                lastReloadHeaderValue = reloadHeaderValue;
+                                shouldReload = true;
+                            }
+                        }
+                    }
+
+                    if (shouldReload && ReloadableCodex.TryGetToken(out var reloadToken) && reloadToken.InvalidateCodex())
+                    {
+                        Console.WriteLine($"Triggered reload: Version={reloadToken.Version}");
+                    }
+                };
+            }));
+
+        // Perform initiailization
+        Task.Run(() => reloadingCodex.GetBaseCodex(new())).IgnoreAsync();
+
+        return reloadingCodex;
+    }
+
+    public virtual async Task<ICodex> GetCodexCoreAsync(RefAction<PagingConfiguration> updateConfiguration = null)
     {
         LuceneConfiguration configuration;
-        string indexSourceUrl = IndexSourceUrl ?? await GetIndexSourceUrl();
-        Console.WriteLine($"[{Thread.CurrentThread.ManagedThreadId}] {indexSourceUrl}");
+        IndexSource = args.IndexSource ?? await GetIndexSourceAsync();
+        var indexSourceUrl = IndexSource.Url = GetIndexSourceUrl(IndexSource);
+        ResolvedIndexSourceUrl = indexSourceUrl = indexSourceUrl.ReplaceIgnoreCase("$(timestamp)", IndexSource.Timestamp.ToPathString());
+        Console.WriteLine($"[{Thread.CurrentThread.ManagedThreadId}] Loading index: {IndexSource}");
         indexSourceUrl = indexSourceUrl.Trim();
         {
             Console.WriteLine("Get configuration");
             AsyncOut<PagingDirectoryInfo> directoryInfo = new AsyncOut<PagingDirectoryInfo>();
             configuration = await PagingHelpers.CreatePagingConfigurationAsync(
                 indexSourceUrl,
-                configuration => configuration with
+                configuration => updateConfiguration.ApplyTo(configuration with
                 {
+                    GetClient = GetClient,
                     Info = directoryInfo,
-                    CacheLimit = 100
-                });
+                    CacheLimit = SdkFeatures.WebProgramCacheLimit
+                }));
 
             Console.WriteLine($"Got configuration: [{directoryInfo.Value.Entries.Count}]");
         }
@@ -67,9 +155,27 @@ public record WebProgramBase(string AutoIndexRoot) : IRepositoryIndexer
         return codex;
     }
 
-    protected virtual async Task<string> GetIndexSourceUrl()
+    protected virtual async Task<IndexSourceLocation> GetIndexSourceAsync()
     {
-        return await Client.GetStringAsync("sources.txt");
+        var json = await Client.GetStringAsync(args.IndexSourceJsonUri);
+        return json.DeserializeEntity<IndexSourceLocation>();
+    }
+
+    protected virtual string GetIndexSourceUrl(IndexSourceLocation indexSource)
+    {
+        var url = indexSource.Url;
+        if (url.Contains(":") || url.AsSpan().IndexOfAny(@"/\") == 0)
+        {
+            return url;
+        }
+        else
+        {
+            var sourceUri = new Uri(url.Replace('\\', '/').TrimStart('/'), UriKind.Relative);
+            var uriBuilder = new UriBuilder(args.RootUrl);
+            uriBuilder.Path = PathUtilities.UriCombine(uriBuilder.Path, sourceUri.GetComponents(UriComponents.Path, UriFormat.Unescaped));
+            uriBuilder.Query = sourceUri.Query;
+            return uriBuilder.Uri.ToString();
+        }
     }
 
     internal record BrowserSourceTextRetriever(IHttpClient BrowserClient) : HttpClientSourceTextRetriever

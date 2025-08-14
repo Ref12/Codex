@@ -2,6 +2,12 @@ import * as boot from './boot.js';
 export function GetHRef() {
     return globalThis.window.location.href;
 }
+export function GetApplicationArgumentsJson() {
+    return JSON.stringify({
+        rootUrl: globalThis.window.rootUrl,
+        startUrl: globalThis.window.location.href,
+    });
+}
 export function SetLeftPane(innerHtml) {
     CodexPage.setLeftPane(innerHtml);
 }

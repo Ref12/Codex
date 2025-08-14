@@ -1,4 +1,4 @@
-﻿namespace Codex.Utilities
+namespace Codex.Utilities
 {
     [GeneratorExclude]
     public interface ISelectComparable<T, TCompare> : IComparable<T>

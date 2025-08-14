@@ -16,9 +16,15 @@ public class TestLogger : TextLogger
 
     protected override void WriteLineCore(string text)
     {
-        Output.WriteLine(text);
+        try
+        {
+            Output.WriteLine(text);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Warning] Could not log message: {text} due to exception\n{ex}");
+        }
     }
-
 }
 
 public class TestOutputWriter : StringWriter

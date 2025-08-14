@@ -1,4 +1,4 @@
-﻿namespace Codex.ObjectModel
+namespace Codex.ObjectModel
 {
     /// <summary>
     /// Defines known set of keywords for <see cref="IDefinitionSymbol.Keywords"/>

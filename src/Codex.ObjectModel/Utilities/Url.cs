@@ -1,4 +1,4 @@
-﻿using Codex.Sdk;
+using Codex.Sdk;
 
 namespace Codex.Utilities
 {

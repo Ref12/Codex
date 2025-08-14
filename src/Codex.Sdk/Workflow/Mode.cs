@@ -1,4 +1,4 @@
-﻿namespace Codex.Automation.Workflow
+namespace Codex.Automation.Workflow
 {
     /// <summary>
     /// Defines the mode for the automation workflow

@@ -1,4 +1,4 @@
-﻿using Codex.Utilities;
+using Codex.Utilities;
 
 namespace Codex.Web.Common
 {
@@ -6,22 +6,22 @@ namespace Codex.Web.Common
     {
         Task<long> GetLengthAsync(string url);
 
-        Task<byte[]> GetBytesAsync(string url, LongExtent? extent = null);
+        Task<ReadOnlyMemory<byte>> GetBytesAsync(string url, LongExtent? extent = null);
 
-        byte[] GetBytes(string url, LongExtent extent);
+        ReadOnlyMemory<byte> GetBytes(string url, LongExtent extent);
     }
 
     public record RemapBytesRetriever(IBytesRetriever Inner) : IBytesRetriever
     {
         public Dictionary<string, (string NewUrl, LongExtent? Range)> Map { get; } = new(StringComparer.OrdinalIgnoreCase);
 
-        public byte[] GetBytes(string url, LongExtent extent)
+        public ReadOnlyMemory<byte> GetBytes(string url, LongExtent extent)
         {
             Remap(ref url, extent, out var newExtent);
             return Inner.GetBytes(url, newExtent.Value);
         }
 
-        public Task<byte[]> GetBytesAsync(string url, LongExtent? extent = null)
+        public Task<ReadOnlyMemory<byte>> GetBytesAsync(string url, LongExtent? extent = null)
         {
             Remap(ref url, extent, out extent);
             return Inner.GetBytesAsync(url, extent);

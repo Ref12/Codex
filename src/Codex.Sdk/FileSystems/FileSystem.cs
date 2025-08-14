@@ -1,4 +1,4 @@
-﻿namespace Codex.Utilities
+namespace Codex.Utilities
 {
     public class FileSystem : IDisposable
     {

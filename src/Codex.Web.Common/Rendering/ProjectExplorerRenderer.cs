@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Codex.Sdk.Search;
 using Codex.Utilities;
 using Codex.View;

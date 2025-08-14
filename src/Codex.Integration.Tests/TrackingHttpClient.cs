@@ -14,7 +14,7 @@ namespace Codex.Integration.Tests
 
         public Uri BaseAddress => Inner.BaseAddress;
 
-        public Task<byte[]> GetByteArrayAsync(StringUri? requestUri, CancellationToken cancellationToken = default)
+        public Task<ReadOnlyMemory<byte>> GetByteArrayAsync(StringUri? requestUri, CancellationToken cancellationToken = default)
         {
             Track(requestUri?.AsString(), null);
             return Inner.GetByteArrayAsync(requestUri, cancellationToken);

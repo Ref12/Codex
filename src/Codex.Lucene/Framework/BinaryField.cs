@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Codex.Lucene.Framework.AutoPrefix;
 using Codex.Utilities;

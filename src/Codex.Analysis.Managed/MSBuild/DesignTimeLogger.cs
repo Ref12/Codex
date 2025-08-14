@@ -1,4 +1,4 @@
-﻿namespace Codex.Analysis.MSBuild;
+namespace Codex.Analysis.MSBuild;
 
 using System;
 using Microsoft.Build.Framework;

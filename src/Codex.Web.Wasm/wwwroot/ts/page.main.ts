@@ -1,4 +1,4 @@
-﻿var DefaultWindowTitle = "ReF12";
+var DefaultWindowTitle = "ReF12";
 
 namespace CodexIpc {
 

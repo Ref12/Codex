@@ -1,4 +1,4 @@
-﻿using System.Runtime.Loader;
+using System.Runtime.Loader;
 using Codex.Application.Verbs;
 using Codex.ObjectModel;
 using Codex.ObjectModel.CompilerServices;
@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Codex.Integration.Tests;
 
-public record WebTests(ITestOutputHelper Output) : CodexTestBase(Output)
+public record WebTests(ITestOutputHelper Output) : AnalyzeTestProjectBase(Output)
 {
     [Fact]
     public void ParseAddresses()
@@ -21,7 +21,7 @@ public record WebTests(ITestOutputHelper Output) : CodexTestBase(Output)
 
         var sourceControlUri = SourceControlUri.Parse("Ref12/Codex", checkRepoNameFormat: true);
 
-        var ss = SourceControlUri.Parse(@"https://testpass@github.com/Ref12/NuCodex");
+        var ss = SourceControlUri.Parse(@"https://testpass@github.com/Ref12/Codex");
         var url = sourceControlUri.GetApiUrlByCommit("a3271e3fad759caec1a812c1315e1a2336cdeb01", "Common.props");
 
         Output.WriteLine("world " + IntPtr.Size);

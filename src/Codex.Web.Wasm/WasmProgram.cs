@@ -17,7 +17,7 @@ using Codex.Web.Common;
 using Codex.Web.Wasm;
 using Codex.Workspaces;
 
-internal record WasmProgram(string StartUrl) : WebProgramBase("/usr/share/autoindex")
+internal class WasmProgram(WebProgramArguments args) : WebProgramBase(args)
 {
     public override MainController App => MainController.App;
     public override JSViewModelController Controller { get; } = new JSViewModelController();
@@ -30,13 +30,13 @@ internal record WasmProgram(string StartUrl) : WebProgramBase("/usr/share/autoin
         {
             Console.WriteLine("Started Main");
 
-            await BrowserAppContext.InitializeAsync();
+            var args = await BrowserAppContext.InitializeAsync();
 
-            string startUrl = CodexJsRuntime.GetHRef().ToString();
-            Console.WriteLine($"Hello, Browser! StartUrl:({startUrl}) from: {Thread.CurrentThread.ManagedThreadId} HasSyncContext={BrowserAppContext.SynchronizationContext != null}]");
+            Console.WriteLine($"Loaded args: {args} from: {Thread.CurrentThread.ManagedThreadId} HasSyncContext={BrowserAppContext.SynchronizationContext != null}]");
+            var startUrl = args.StartUrl.ToString();
             var address = ViewModelAddress.Parse(startUrl);
 
-            await new WasmProgram(startUrl).RunAsync(address);
+            await new WasmProgram(args).RunAsync(address);
 
             await BrowserAppContext.SwitchToMainThread();
             CodexJsRuntime.Navigate(startUrl);
@@ -53,22 +53,6 @@ internal record WasmProgram(string StartUrl) : WebProgramBase("/usr/share/autoin
         {
             Console.WriteLine("Finished Main");
         }
-    }
-
-    protected override async Task<string> GetIndexSourceUrl()
-    {
-        var url = await base.GetIndexSourceUrl();
-        if (url.Contains(":") || url.AsSpan().IndexOfAny(@"/\") == 0)
-        {
-            return url;
-        }
-        else
-        {
-            var uriBuilder = new UriBuilder(StartUrl);
-            uriBuilder.Path = PathUtilities.UriCombine(uriBuilder.Path, url.Replace('\\', '/'));
-            return uriBuilder.Uri.ToString();
-        }
-
     }
 
     public static async Task RunTimer()

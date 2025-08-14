@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;

@@ -1,4 +1,4 @@
-﻿using Codex.View;
+using Codex.View;
 using System;
 using System.Collections.Generic;
 using System.Text;

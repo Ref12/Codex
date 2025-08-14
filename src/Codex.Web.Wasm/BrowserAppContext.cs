@@ -17,27 +17,24 @@ public partial class BrowserAppContext
 
     public static bool IsMainThread => Thread.CurrentThread.ManagedThreadId == MainThreadId;
 
-    public static async Task InitializeAsync(bool isSingleThreaded = false)
+    public static async Task<WebProgramArguments> InitializeAsync(bool isSingleThreaded = false)
     {
         await CodexJsRuntime.StartAsync();
 
-        var baseAddress = CodexJsRuntime.GetBaseAddress();
-        var client = GetClient(default);
+        var argsJson = CodexJsRuntime.GetApplicationArgumentsJson();
+        Console.WriteLine($"Arguments: {argsJson}");
 
-        client.BaseAddress = baseAddress;
-
-        SdkFeatures.GetClient = GetClient;
-        SdkFeatures.HttpClient = client;
+        var args = argsJson.DeserializeEntity<WebProgramArguments>();
+        args.Process();
 
         SynchronizationContext = SynchronizationContext.Current;
         MainThreadId = Thread.CurrentThread.ManagedThreadId;
+        return args;
 
     }
 
     private static IInnerHttpClient GetClient(HttpClientKind kind)
     {
-        //var client = new HttpClientWrapper(new BrowserHttpHandler());
-        //var client = new BrowserHttpHandler();
         var client = new BrowserHttpClientWrapper();
         return client;
     }

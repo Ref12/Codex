@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using Codex.ObjectModel;
 using Codex.ObjectModel.Implementation;
 using Codex.Sdk;

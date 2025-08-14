@@ -1,4 +1,4 @@
-﻿namespace CodexIpc {
+namespace CodexIpc {
     export var ServiceMode: "Page" | "Worker";
     export var Service: ICodexPage | IndexService;
 

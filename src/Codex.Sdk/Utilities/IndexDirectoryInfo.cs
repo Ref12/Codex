@@ -1,3 +1,3 @@
-﻿namespace Codex.Utilities;
+namespace Codex.Utilities;
 
 public partial record IndexDirectoryInfo();

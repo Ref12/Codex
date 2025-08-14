@@ -1,4 +1,4 @@
-﻿using LibGit2Sharp;
+using LibGit2Sharp;
 using Branch = LibGit2Sharp.Branch;
 using Commit = LibGit2Sharp.Commit;
 using Repository = LibGit2Sharp.Repository;

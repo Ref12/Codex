@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.Numerics;
 using Codex.Sdk;
 using Codex.Utilities.Serialization;

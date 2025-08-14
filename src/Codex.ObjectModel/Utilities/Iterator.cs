@@ -1,4 +1,4 @@
-﻿namespace Codex.Utilities
+namespace Codex.Utilities
 {
     public record struct Iterator<TEnumerator, T>(TEnumerator Enumerator, bool moveNext = true) : IIterator<T>
         where TEnumerator : IEnumerator<T>

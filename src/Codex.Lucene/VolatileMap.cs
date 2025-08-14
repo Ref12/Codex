@@ -1,4 +1,4 @@
-﻿using Codex.Utilities;
+using Codex.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

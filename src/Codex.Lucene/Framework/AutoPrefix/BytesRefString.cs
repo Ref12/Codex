@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 using Codex.Utilities;
 using Lucene.Net.Queries.Function.ValueSources;
 using Lucene.Net.Util;

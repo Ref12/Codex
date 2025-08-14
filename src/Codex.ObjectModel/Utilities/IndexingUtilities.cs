@@ -1,4 +1,4 @@
-﻿using Codex.ObjectModel;
+using Codex.ObjectModel;
 using Codex.Sdk.Utilities;
 using Codex.Utilities.Serialization;
 using System;

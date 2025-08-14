@@ -1,4 +1,4 @@
-﻿namespace Codex.Storage.BlockLevel;
+namespace Codex.Storage.BlockLevel;
 
 public enum AddressKind : byte
 {

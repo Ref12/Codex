@@ -1,4 +1,4 @@
-﻿using Codex.Utilities;
+using Codex.Utilities;
 using System.Diagnostics.ContractsLight;
 using System.Runtime.InteropServices;
 using Lucene.Net.Documents;

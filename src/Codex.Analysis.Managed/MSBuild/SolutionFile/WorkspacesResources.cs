@@ -1,4 +1,4 @@
-﻿namespace Codex.MSBuild
+namespace Codex.MSBuild
 {
     internal static class WorkspacesResources
     {

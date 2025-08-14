@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Codex.Utilities;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -29,6 +29,11 @@ namespace Codex.Analysis.Managed
             }
 
             return base.VisitBinaryOperator(operation, argument);
+        }
+
+        public override object? VisitAwait(IAwaitOperation operation, AnalysisState argument)
+        {
+            return base.VisitAwait(operation, argument);
         }
 
         public override object? VisitIncrementOrDecrement(IIncrementOrDecrementOperation operation, AnalysisState argument)

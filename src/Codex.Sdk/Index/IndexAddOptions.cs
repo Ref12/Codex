@@ -1,4 +1,4 @@
-﻿namespace Codex.Storage
+namespace Codex.Storage
 {
     public record struct IndexAddOptions
     {

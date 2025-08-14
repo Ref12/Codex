@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.ContractsLight;
+using System.Diagnostics.ContractsLight;
 using System.Text.Json;
 using Codex.Logging;
 using Codex.Sdk.Utilities;

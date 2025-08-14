@@ -1,4 +1,4 @@
-﻿using Codex.Analysis.Managed;
+using Codex.Analysis.Managed;
 using Codex.Analysis.Projects;
 using Codex.Utilities;
 using Codex.Utilities.Serialization;

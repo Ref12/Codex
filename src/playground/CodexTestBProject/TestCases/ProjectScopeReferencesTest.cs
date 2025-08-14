@@ -1,4 +1,4 @@
-﻿using CodexTestProject;
+using CodexTestProject;
 
 namespace CodexTestBProject;
 

@@ -1,4 +1,4 @@
-﻿namespace Codex.Utilities;
+namespace Codex.Utilities;
 
 public record struct CaselessString(ReadOnlyMemory<char> Chars) : IEquatable<CaselessString>, ICharString<CaselessString>
 {

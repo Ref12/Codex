@@ -1,4 +1,4 @@
-﻿using Codex.Sdk.Search;
+using Codex.Sdk.Search;
 using Codex.Utilities;
 using Codex.Web.Common;
 using Codex.Web.Mvc.Rendering;

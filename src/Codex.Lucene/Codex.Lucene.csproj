@@ -9,7 +9,7 @@
   <ItemGroup>
     <CodexReference Include="Codex.ObjectModel" />
     <CodexReference Include="Codex.Sdk" />
-    <CodexReference Include="Codex.Storage" />
+    <!--<CodexReference Include="Codex.Storage" />-->
 
     <LuceneReference Include="Lucene.Net" />
     <LuceneReference Include="Lucene.Net.Misc" />

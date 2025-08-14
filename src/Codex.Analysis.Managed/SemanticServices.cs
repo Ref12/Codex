@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using Codex.Utilities;
 using Microsoft.CodeAnalysis;

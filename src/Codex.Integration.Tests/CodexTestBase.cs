@@ -19,6 +19,8 @@ namespace Codex.Integration.Tests;
 [TestCaseOrderer("Codex.Integration.Tests.CodexTestOrderer", "Codex.Integration.Tests")]
 public record CodexTestBase : IDisposable
 {
+    public static FeatureSwitch<ITestCase?> ActiveTestCase { get; } = new();
+
     public IConfiguration Secrets { get; protected set; }
 
     public Action<AnalyzeOperation> UpdateAnalyze { get; set; }
@@ -28,9 +30,13 @@ public record CodexTestBase : IDisposable
     public TestLogger Logger { get; }
     private string _testOutputDirectory;
     public string TestRoot { get; set; } = string.Empty;
+    public string TestQualifier { get; set; } = string.Empty;
+
+    public ITestCase? TestCase { get; set; }
 
     public CodexTestBase(ITestOutputHelper output)
     {
+        CodexProgramBase.Initialize();
         Output = new TimerOutputHelper(output);
         Logger = new TestLogger(output);
         Console.SetOut(Logger.Writer);
@@ -44,7 +50,13 @@ public record CodexTestBase : IDisposable
         var builder = new ConfigurationBuilder()
             .AddUserSecrets<CodexTestBase>();
 
+        TestCase = ActiveTestCase.Value;
+        Logger.WriteLine($"Test case started: DisplayName={TestCase?.DisplayName}, Unique={TestCase?.UniqueID}, TestCase='{TestCase}'");
         Secrets = builder.Build();
+        if (MiscUtilities.TryGetEnvironmentVariable("TEST_OUTPUT_ROOT", out var testRoot))
+        {
+            TestRoot = testRoot;
+        }
 
         Initialize();
     }
@@ -101,24 +113,52 @@ public record CodexTestBase : IDisposable
 
         string getPath()
         {
-            var testRootDir = Path.GetFullPath(Path.Combine(TestRoot, "tests", GetType().Name));
-            if (args == null)
-            {
-                return Path.Combine(testRootDir, testName);
-            }
-            else
-            {
-                return Path.Combine(testRootDir, $"{testName}.{args.GetHashCode()}");
-            }
+            testName = TestCase?.TestMethod.Method.Name ?? testName;
+
+            var testRootDir = Path.GetFullPath(Path.Combine(
+                TestRoot,
+                "tests",
+                GetType().Name,
+                StringEx.JoinNonEmpty(".", testName, TestCase?.UniqueID.Substring(0, 8) ?? $"{args?.GetHashCode():x}")
+            ));
+
+            return testRootDir;
         }
+    }
+
+    public async Task<WebProgramBase> CreateWebProgram(IngestOperation indexOperation, RefAction<WebProgramArguments>? updateArguments = null)
+    {
+        var arguments = new WebProgramArguments()
+        {
+            RootUrl = new Uri("https://codex.test"),
+            StartUrl = new Uri("https://codex.test"),
+            IndexSource = new Configuration.IndexSourceLocation()
+            {
+                Url = GetIndexUrl(indexOperation),
+            },
+        };
+
+        updateArguments?.Invoke(new(ref arguments));
+        var program = new WebProgramBase(arguments);
+
+        await program.RunAsync();
+
+        return program; ;
     }
 
     public CodexPage CreateCodexApp(IngestOperation indexOperation,
         Func<CodexAppOptions, CodexAppOptions> updateOptions = null)
     {
-        string indexUrl = indexOperation.OutputDirectory;
+        string indexUrl = GetIndexUrl(indexOperation);
 
         return CreateCodexApp(indexUrl, updateOptions);
+    }
+
+    public string GetIndexUrl(IngestOperation indexOperation)
+    {
+        string indexUrl = indexOperation.OutputDirectory;
+
+        return indexUrl;
     }
 
     public async Task<CodexPage> IndexAsync(

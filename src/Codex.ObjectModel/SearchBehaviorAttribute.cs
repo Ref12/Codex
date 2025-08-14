@@ -1,4 +1,4 @@
-﻿namespace Codex.ObjectModel.Attributes
+namespace Codex.ObjectModel.Attributes
 {
     [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
     internal class SearchBehaviorAttribute : Attribute

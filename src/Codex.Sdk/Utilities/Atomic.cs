@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using BuildXL.Utilities.Collections;
 using Codex.Utilities.Tasks;
 

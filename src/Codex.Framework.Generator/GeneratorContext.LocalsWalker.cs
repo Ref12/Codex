@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Codex.Utilities.Serialization;
 using Meziantou.Framework.CodeDom;
 using Microsoft.CodeAnalysis;

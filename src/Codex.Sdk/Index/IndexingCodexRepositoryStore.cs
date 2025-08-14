@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using Codex.Logging;
 using Codex.ObjectModel;
 using Codex.ObjectModel.Attributes;

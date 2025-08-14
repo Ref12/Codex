@@ -1,4 +1,4 @@
-﻿namespace Codex.Utilities
+namespace Codex.Utilities
 {
     public interface IValueEnumerable<TSelf, T> : IStandardEnumerable<T>
         where TSelf : IValueEnumerable<TSelf, T>

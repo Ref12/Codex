@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 
 public sealed record RangeList(Extent Extent) : IReadOnlyList<int>
 {

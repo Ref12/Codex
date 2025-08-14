@@ -1,4 +1,4 @@
-﻿using Codex.Utilities.Serialization;
+using Codex.Utilities.Serialization;
 
 namespace Codex.Utilities;
 

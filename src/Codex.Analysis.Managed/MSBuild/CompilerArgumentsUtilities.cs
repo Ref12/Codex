@@ -1,4 +1,4 @@
-﻿using Codex.Utilities;
+using Codex.Utilities;
 using Microsoft.Build.Framework;
 using Microsoft.CodeAnalysis;
 using System;

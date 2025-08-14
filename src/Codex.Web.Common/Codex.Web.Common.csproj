@@ -8,6 +8,7 @@
     <CodexReference Include="Codex.Lucene" />
     <CodexReference Include="Codex.ObjectModel" />
     <CodexReference Include="Codex.Sdk" />
+    <CodexReference Include="Codex.Storage" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Net;
 using Codex.Sdk;
 
@@ -53,6 +53,16 @@ namespace Codex.Utilities
             var builder = new UriBuilder(uri);
             builder.Path = UriCombine(builder.Path, relativeUri);
             return builder.Uri;
+        }
+
+        public static Uri RemoveQuery(Url uri)
+        {
+            return new Uri(uri.Uri.GetLeftPart(UriPartial.Path));
+        }
+
+        public static Uri WithoutQuery(this Uri uri)
+        {
+            return RemoveQuery(uri);
         }
 
         public static string NormalizePath(string path, char? directorySeparator = null)
@@ -144,6 +154,15 @@ namespace Codex.Utilities
             }
 
             return path;
+        }
+
+        public static string AppendQuery(string uri, string query)
+        {
+            var trimmedQuery = query.AsSpan().TrimStart("?&");
+            if (trimmedQuery.Length == 0) return uri;
+
+            var separator = uri.Contains("?") ? "&" : "?";
+            return $"{uri}{separator}{trimmedQuery}";
         }
 
         public static string AsUrlRelativePath(this string relativePath, bool encode = true)

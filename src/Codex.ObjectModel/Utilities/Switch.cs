@@ -1,4 +1,4 @@
-﻿namespace Codex.Utilities
+namespace Codex.Utilities
 {
     public record struct Switch<T>(T Primary, T Secondary)
     {

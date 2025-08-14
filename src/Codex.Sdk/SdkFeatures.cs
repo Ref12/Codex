@@ -1,5 +1,6 @@
 using Codex.Logging;
 using Codex.ObjectModel;
+using Codex.Sdk.Utilities;
 using Codex.Storage;
 using Codex.Storage.BlockLevel;
 using Codex.Utilities.Zip;
@@ -16,6 +17,8 @@ namespace Codex
 
         public static readonly FeatureSwitch<Parsed<ShortHash>?> DebugAddressEntryHash = new();
 
+        public static readonly FeatureSwitch<int> WebProgramCacheLimit = 100;
+
         public static readonly FeatureSwitch<int?> DebugEntityStableId = new();
 
         public static readonly FeatureSwitch<bool> CheckBlobReassignment = false;
@@ -24,10 +27,16 @@ namespace Codex
 
         public static readonly FeatureSwitch<Func<string, bool>> CanReadFilter = new();
 
-        public static IInnerHttpClient HttpClient { get; set; } = new HttpClientWrapper();
+        // For unit testing purposes only to capture the http client used to query index files
+        public static readonly FeatureSwitch<AsyncOut<IBytesRetriever>?> IndexRetrieverTestHook = new();
+
+        public static readonly FeatureSwitch<Func<HttpClientKind, HttpResponseMessage, HttpResponseMessage?>?> IndexClientResponsePreprocessor = new(); 
+
+        public static IHttpClient HttpClient { get; set; } = new HttpClientWrapper();
 
         public static Func<HttpClientKind, IInnerHttpClient> GetClient { get; set; }
 
+        public static Func<Uri, Uri>? ProcessIndexAddress { get; set; }
 
         public static readonly FeatureSwitch<Logger> AmbientLogger = new();
 

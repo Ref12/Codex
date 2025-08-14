@@ -1,4 +1,4 @@
-﻿using Codex.Utilities;
+using Codex.Utilities;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Lucene.Net.Util;

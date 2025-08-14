@@ -1,4 +1,4 @@
-﻿namespace Codex.Analysis.Managed
+namespace Codex.Analysis.Managed
 {
     public class ManagedAnalysisHost
     {

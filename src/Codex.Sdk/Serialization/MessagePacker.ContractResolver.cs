@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.Serialization;
 using Codex.ObjectModel;
 using MessagePack;

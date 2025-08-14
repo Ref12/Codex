@@ -1,4 +1,4 @@
-﻿namespace Codex.Utilities.Serialization;
+namespace Codex.Utilities.Serialization;
 
 public record struct NameString(ReadOnlyMemory<char> Chars, bool CaseSensitive = false) : IEquatable<NameString>
 {

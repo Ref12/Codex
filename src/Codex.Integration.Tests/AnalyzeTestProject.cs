@@ -7,10 +7,12 @@ using System.Text.Json;
 using Codex.Application;
 using Codex.Application.Verbs;
 using Codex.Build.Tasks;
+using Codex.Configuration;
 using Codex.Lucene;
 using Codex.Lucene.Formats;
 using Codex.Lucene.Search;
 using Codex.ObjectModel;
+using Codex.ObjectModel.Attributes;
 using Codex.ObjectModel.Implementation;
 using Codex.Sdk;
 using Codex.Sdk.Search;
@@ -22,8 +24,10 @@ using Codex.Web.Common;
 using CodexTestBProject;
 using CodexTestProject;
 using DotNext;
+using DotNext.IO;
 using FluentAssertions;
 using LibGit2Sharp;
+using Microsoft.Net.Http.Headers;
 using Mono.Cecil.Cil;
 using Xunit.Abstractions;
 using M = Codex.ObjectModel.Implementation.SearchMappings;
@@ -732,8 +736,10 @@ public record AnalyzeTestProject(ITestOutputHelper Output) : AnalyzeTestProjectB
     }
 
     //[Theory][InlineData(0)][InlineData(1)][InlineData(2)][InlineData(3)]
-    [Fact]
-    public async Task SearchIndexWithStoredFiltersSnapshotsMultiIngest()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task SearchIndexWithStoredFiltersSnapshotsMultiIngest(bool shouldCheckReload)
     {
         GetTestOutputDirectory(clean: true);
         int index = -1;
@@ -757,6 +763,25 @@ public record AnalyzeTestProject(ITestOutputHelper Output) : AnalyzeTestProjectB
             }
         });
 
+        DateTimeOffset lastModifiedTimeStart = DateTimeOffset.UtcNow;
+        TimeSpan lastModifiedTimeOffset = default;
+        IndexSourceLocation indexSource = default;
+        IBytesRetriever indexClient = default;
+        using var _1 = SdkFeatures.WebProgramCacheLimit.EnableLocal(3);
+
+        using var _2 = SdkFeatures.IndexClientResponsePreprocessor.EnableLocal((kind, rsp) =>
+        {
+            if (kind == HttpClientKind.Index && rsp.IsSuccessStatusCode)
+            {
+                rsp.Content.Headers.LastModified = lastModifiedTimeStart + lastModifiedTimeOffset;
+            }
+
+            return null;
+        });
+
+
+        CodexPage webProgramReloadablePage = default;
+
         ValueTask? emitDebugInfoAsync()
         {
             ValueTask? task = default;
@@ -777,6 +802,8 @@ public record AnalyzeTestProject(ITestOutputHelper Output) : AnalyzeTestProjectB
 
         async Task runAsync(string resultPrefix, string unexpected, bool clean = false, bool shouldIngest = false)
         {
+            lastModifiedTimeOffset += TimeSpan.FromMinutes(1);
+
             index++;
             var analyze = await RunAnalyzeTestProjectAnalysis(o => o with
             {
@@ -810,27 +837,57 @@ public record AnalyzeTestProject(ITestOutputHelper Output) : AnalyzeTestProjectB
 
                 //if (stage) return;
 
-                (var codex, var app, var view) = CreateCodexApp(ingest);
+                var pages = new List<CodexPage>();
 
-                //var results = await codex.SearchAsync(new SearchArguments()
-                //{
-                //    SearchString = "ixe",
-                //    DisableStoredFilter = true
-                //});
+                if (shouldCheckReload)
+                {
+                    using var _0 = SdkFeatures.IndexRetrieverTestHook.EnableLocal(new(out var indexClientOut));
+                    webProgramReloadablePage ??= await CreateWebProgram(ingest, updateArguments: args =>
+                    {
+                        indexSource ??= args.Value.IndexSource;
+                        indexSource.ReloadHeader = HeaderNames.LastModified;
+                    }).SelectAsync(w => w.GetPage());
 
-                await app.SearchTextChanged(unexpected);
+                    pages.Add(webProgramReloadablePage);
 
-                var localEval = (eval, idEval);
 
-                await app.SearchTextChanged(resultPrefix);
+                    await webProgramReloadablePage.ReloadableCodex.CustomRunAsync(new ContextCodexArgumentsBase(), async c =>
+                    {
+                        indexSource.Url = GetIndexUrl(ingest);
+                        indexClient ??= indexClientOut.Value;
+                        ReloadableCodex.TryGetToken(out var reloadToken);
+                        var response = await indexClient.GetBytesAsync(PagingDirectoryInfo.DirectoryInfoFileName).SelectAsync(b => b.AsStream().ReadAllText());
+                        return new IndexQueryResponse();
+                    });
 
-                var itemCount = view.LeftPane.Content?.ItemList.Count ?? 0;
-                Assert.True(itemCount > 0);
+                }
 
-                await app.SearchTextChanged(unexpected);
+                pages.Add(CreateCodexApp(ingest));
 
-                itemCount = view.LeftPane.Content?.ItemList.Count ?? 0;
-                Assert.True(itemCount == 0);
+                foreach (var page in pages)
+                {
+                    (var codex, var app, var view) = page;
+
+                    //var results = await codex.SearchAsync(new SearchArguments()
+                    //{
+                    //    SearchString = "ixe",
+                    //    DisableStoredFilter = true
+                    //});
+
+                    await app.SearchTextChanged(unexpected);
+
+                    var localEval = (eval, idEval);
+
+                    await app.SearchTextChanged(resultPrefix);
+
+                    var itemCount = view.LeftPane.Content?.ItemList.Count ?? 0;
+                    Assert.True(itemCount > 0);
+
+                    await app.SearchTextChanged(unexpected);
+
+                    itemCount = view.LeftPane.Content?.ItemList.Count ?? 0;
+                    Assert.True(itemCount == 0);
+                }
             }
         }
     }

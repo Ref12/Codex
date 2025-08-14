@@ -1,4 +1,4 @@
-﻿namespace Codex.Utilities;
+namespace Codex.Utilities;
 
 public class StringMap<TValue, TCompare> : Dictionary<string, TValue>
     where TCompare : StringCompare.IComparerProvider

@@ -1,4 +1,4 @@
-﻿namespace Codex.Sdk.Utilities
+namespace Codex.Sdk.Utilities
 {
     public interface ITypeBox
     {

@@ -1,4 +1,4 @@
-﻿using Codex.Lucene.Search;
+using Codex.Lucene.Search;
 using Codex.Sdk.Search;
 using Codex.Storage;
 using Codex.Utilities;
@@ -39,6 +39,8 @@ namespace Codex.View
         public ViewModelAddress Address => View.NavigationBar.Address;
 
         public LuceneCodex LuceneCodex => (LuceneCodex)Codex;
+
+        public ReloadableCodex ReloadableCodex => (ReloadableCodex)Codex;
 
         public Task NavigateTo(ViewModelAddress address) => address.NavigateAsync(App);
 

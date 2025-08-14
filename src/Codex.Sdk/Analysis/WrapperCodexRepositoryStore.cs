@@ -1,4 +1,4 @@
-﻿namespace Codex
+namespace Codex
 {
     public record WrapperCodexStore(ICodexStore Inner, Func<ICodexRepositoryStore, RepositoryStoreInfo, ICodexRepositoryStore> WrapStore) : ICodexStore
     {

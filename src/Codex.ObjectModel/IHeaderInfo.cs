@@ -1,4 +1,4 @@
-﻿namespace Codex.ObjectModel
+namespace Codex.ObjectModel
 {
     public interface IHeaderInfo
     {

@@ -20,6 +20,9 @@
   </script>
 
   <script>
+    // Capture root URL for SPA routing since any nested paths will be redirected to root.
+    window.rootUrl = window.location.href;
+
     //  handle SPA routing
     const redirected = sessionStorage.getItem('spa-redirect');
     if (redirected) {

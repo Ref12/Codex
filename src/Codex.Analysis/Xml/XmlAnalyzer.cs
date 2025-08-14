@@ -1,4 +1,4 @@
-﻿using Microsoft.Language.Xml;
+using Microsoft.Language.Xml;
 
 namespace Codex.Analysis
 {

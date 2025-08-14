@@ -1,4 +1,4 @@
-﻿namespace Codex.Analysis.Xml.Linq
+namespace Codex.Analysis.Xml.Linq
 {
     public class XmlSemanticAnnotation
     {

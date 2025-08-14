@@ -1,56 +1,19 @@
-﻿using Codex.ObjectModel;
+using Codex.ObjectModel;
 
 namespace Codex.Sdk.Search
 {
-    public class NullCodex : ICodex
+    public record NullCodex : CodexWrapperBase
     {
-        public async Task<IndexQueryResponse<ReferencesResult>> FindAllReferencesAsync(FindAllReferencesArguments arguments)
+        public override ValueTask<ICodex> GetBaseCodex(ContextCodexArgumentsBase arguments)
         {
-            await Task.Yield();
-            return PostProcess<IndexQueryResponse<ReferencesResult>>(new());
+            throw new NotImplementedException();
         }
 
-        public async Task<IndexQueryHitsResponse<IDefinitionSearchModel>> FindDefinitionAsync(FindDefinitionArguments arguments)
+        protected override Task<TResponse> RunAsync<TArgs, TResponse>(TArgs arguments, Func<ICodex, Task<TResponse>> runAsync)
         {
-            await Task.Yield();
-            return PostProcess<IndexQueryHitsResponse<IDefinitionSearchModel>>(new());
-        }
-
-        public async Task<IndexQueryResponse<ReferencesResult>> FindDefinitionLocationAsync(FindDefinitionLocationArguments arguments)
-        {
-            await Task.Yield();
-            return PostProcess<IndexQueryResponse<ReferencesResult>>(new());
-        }
-
-        public async Task<IndexQueryResponse<GetProjectResult>> GetProjectAsync(GetProjectArguments arguments)
-        {
-            await Task.Yield();
-            return PostProcess<IndexQueryResponse<GetProjectResult>>(new());
-        }
-
-        public async Task<IndexQueryHitsResponse<ICommit>> GetRepositoryHeadsAsync(GetRepositoryHeadsArguments arguments)
-        {
-            await Task.Yield();
-            return PostProcess<IndexQueryHitsResponse<ICommit>>(new());
-        }
-
-        public async Task<IndexQueryResponse<IBoundSourceFile>> GetSourceAsync(GetSourceArguments arguments)
-        {
-            await Task.Yield();
-            return PostProcess<IndexQueryResponse<IBoundSourceFile>>(new());
-        }
-
-        public async Task<IndexQueryHitsResponse<ISearchResult>> SearchAsync(SearchArguments arguments)
-        {
-            await Task.Yield();
-            return PostProcess<IndexQueryHitsResponse<ISearchResult>>(new());
-        }
-
-        private TResponse PostProcess<TResponse>(TResponse response)
-            where TResponse : IndexQueryResponse
-        {
+            var response = new TResponse();
             response.Error = "No results found.";
-            return response;
+            return Task.FromResult(response);
         }
     }
 }

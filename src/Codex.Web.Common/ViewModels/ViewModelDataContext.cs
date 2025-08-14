@@ -1,4 +1,4 @@
-﻿using Codex.ObjectModel.Implementation;
+using Codex.ObjectModel.Implementation;
 using Codex.Sdk.Search;
 using Codex.Storage.BlockLevel;
 using Codex.Utilities;

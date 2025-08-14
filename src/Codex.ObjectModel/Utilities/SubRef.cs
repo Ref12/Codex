@@ -1,4 +1,4 @@
-﻿namespace Codex.Utilities
+namespace Codex.Utilities
 {
     /// <summary>
     /// Used to specify out paramater to async method.

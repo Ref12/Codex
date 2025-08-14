@@ -25,8 +25,8 @@ public partial class CodexJsRuntime
     [JSImport("GoToSymbolOrLineNumber", ModuleName)]
     internal static partial void GoToSymbolOrLineNumber(int line, string symbol);
 
-    [JSImport("GetHRef", ModuleName)]
-    public static partial string GetHRef();
+    [JSImport(nameof(GetApplicationArgumentsJson), ModuleName)]
+    public static partial string GetApplicationArgumentsJson();
 
     [JSImport("Navigate", ModuleName)]
     public static partial void Navigate(string url);
@@ -36,13 +36,4 @@ public partial class CodexJsRuntime
 
     [JSImport(nameof(SetupAsync), ModuleName)]
     internal static partial Task SetupAsync();
-
-    internal static Uri GetBaseAddress()
-    {
-        var href = new Uri(GetHRef()).GetLeftPart(UriPartial.Path);
-        Console.WriteLine("GetHRef: " + href);
-        href = href.TrimEndIgnoreCase("index.html");
-        Console.WriteLine("GetHRef: " + href);
-        return new Uri(href);
-    }
 }

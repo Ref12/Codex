@@ -1,4 +1,4 @@
-﻿using Codex.ObjectModel;
+using Codex.ObjectModel;
 using Codex.ObjectModel.Implementation;
 using Codex.Utilities;
 using System;

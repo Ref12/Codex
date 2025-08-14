@@ -1,4 +1,4 @@
-﻿using Codex.Analysis.Files;
+using Codex.Analysis.Files;
 using Codex.Import;
 using Codex.ObjectModel;
 using Microsoft.Language.Xml;

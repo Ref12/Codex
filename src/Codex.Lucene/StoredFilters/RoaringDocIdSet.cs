@@ -1,4 +1,4 @@
-﻿using Codex.Lucene.Framework;
+using Codex.Lucene.Framework;
 using Codex.Sdk.Utilities;
 using Codex.Utilities;
 using CommunityToolkit.HighPerformance;

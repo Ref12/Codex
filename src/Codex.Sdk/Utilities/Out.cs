@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using Codex.Sdk.Utilities;
 using CommunityToolkit.HighPerformance;
 
@@ -68,7 +68,19 @@ namespace Codex.Utilities
             invoke();
         }
 
+        public static T ApplyTo<T>(this RefAction<T>? refAction, T value)
+        {
+            if (refAction != null)
+            {
+                refAction(CreateRef(ref value));
+            }
+
+            return value;
+        }
+
         public static Action<T> Action<T>(Action<T> action) => action;
+
+        public static Ref<T> CreateRef<T>(ref T value) => new Ref<T>(ref value);
 
         public static Out<T> Create<T>(ref T value) => new Out<T>(ref value, default);
 

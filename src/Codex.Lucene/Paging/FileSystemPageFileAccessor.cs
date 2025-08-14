@@ -120,7 +120,7 @@ namespace Codex.Lucene.Search
             var range = request.ExtractRange();
 
             using var stream = await OpenStreamCoreAsync(
-                request.RequestUri?.OriginalString ?? "",
+                request.RequestUri.OriginalString.AsSpan().SubstringFromFirstIndexOfAny("?").ToString(),
                 range,
                 writable: false,
                 httpMode: true) as MemoryStream;
@@ -132,11 +132,12 @@ namespace Codex.Lucene.Search
 
             return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
             {
+                RequestMessage = request,
                 Content = new ExposedByteArrayContent(stream.GetBuffer())
             };
         }
 
-        public Task<byte[]> GetByteArrayAsync(StringUri? requestUri, CancellationToken cancellationToken = default)
+        public Task<ReadOnlyMemory<byte>> GetByteArrayAsync(StringUri? requestUri, CancellationToken cancellationToken = default)
         {
             return this.GetByteRangeAsync(requestUri?.AsString(), -1, -1);
         }

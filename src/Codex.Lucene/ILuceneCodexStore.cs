@@ -1,4 +1,4 @@
-﻿using Codex.Storage;
+using Codex.Storage;
 
 namespace Codex.Lucene.Search
 {

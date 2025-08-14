@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Codex.Lucene.Framework;
 using Lucene.Net.Index;
 

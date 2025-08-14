@@ -1,4 +1,4 @@
-﻿namespace Codex.Application.Verbs;
+namespace Codex.Application.Verbs;
 
 //[Verb("list", HelpText = "List repos in an index.")]
 //public class ListOperation : IndexReadOperationBase

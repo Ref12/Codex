@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 using Codex.Storage;
 using Codex.Utilities;

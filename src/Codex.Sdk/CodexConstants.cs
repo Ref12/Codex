@@ -17,6 +17,8 @@ public static class CodexConstants
 
     public const string IndexZipBlobName = "index.zip";
 
+    public const string CodexSourceFileName = "codex-source.json";
+
     public const string RelativeTempDirectory = ".tmp";
 
     public const string ObjectDirectoryName = "objects";

@@ -1,4 +1,4 @@
-﻿using Codex.Utilities;
+using Codex.Utilities;
 using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;

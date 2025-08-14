@@ -1,4 +1,4 @@
-﻿using System.Runtime.Serialization;
+using System.Runtime.Serialization;
 using Codex.Utilities;
 
 namespace Codex.ObjectModel.Implementation

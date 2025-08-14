@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>Redirecting...</title>
   <script>
+    (function() {
     // This code is used to detect the root URL of the application assuming it may have at most one level
     // of nesting under domain url (i.e. in github pages https://org.github.io/project)
     window.rootUrl = '/'
@@ -26,6 +27,7 @@
     if (current && current.parentNode) {
       current.parentNode.insertBefore(script, current.nextSibling);
     }
+    })();
   </script>
   <script>
     // Store original URL and redirect to base

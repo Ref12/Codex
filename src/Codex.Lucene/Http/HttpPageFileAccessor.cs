@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Codex.Lucene.Search;
 using Codex.ObjectModel.Implementation;
 using Codex.Utilities;
+using DotNext.IO;
 using Lucene.Net.Codecs;
 namespace Codex.Web.Common
 {
@@ -60,7 +61,7 @@ namespace Codex.Web.Common
             try
             {
                 var bytes = await Client.GetBytesAsync(path, range?.ToLong());
-                return new MemoryStream(bytes);
+                return bytes.AsStream();
             }
             catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {

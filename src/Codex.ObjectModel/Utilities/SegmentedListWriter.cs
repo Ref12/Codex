@@ -1,4 +1,4 @@
-﻿namespace Codex.Utilities;
+namespace Codex.Utilities;
 
 public record SegmentedListWriter<T>(int SegmentCount = 1, bool TrackSegments = false, ArrayBuilder<T> Items = null)
 {

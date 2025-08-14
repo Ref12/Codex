@@ -33,10 +33,13 @@ public class NuGetPackageDownloader
 
         Placeholder.Trace2(targetPath);
 
-        byte[] packageBytes = await SdkFeatures.HttpClient.GetByteArrayAsync(packageDownloadUrl);
+        var packageBytes = await SdkFeatures.HttpClient.GetByteArrayAsync(packageDownloadUrl);
 
         Placeholder.Trace2();
-        File.WriteAllBytes(packageFilePath, packageBytes);
+        using (var fs = File.Open(packageFilePath, FileMode.Create))
+        {
+            await fs.WriteAsync(packageBytes);
+        }
 
         return packageFilePath;
     }

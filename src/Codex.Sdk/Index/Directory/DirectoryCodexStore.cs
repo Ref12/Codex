@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Diagnostics.ContractsLight;
 using System.Runtime.CompilerServices;
 using Codex.Logging;

@@ -1,4 +1,4 @@
-﻿namespace Codex.Lucene.Search
+namespace Codex.Lucene.Search
 {
     public record struct PendingSegment(Lazy<PageFileSegment> Lazy, ValueTask<PageFileSegment> Task)
     {

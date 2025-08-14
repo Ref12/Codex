@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using Codex.Utilities.Serialization;
 
 namespace Codex.ObjectModel.Attributes

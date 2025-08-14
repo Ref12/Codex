@@ -15,14 +15,12 @@ public interface IHttpClient : IBytesRetriever
 
     Task<HttpResponseMessage> SendMessageAsync(HttpRequestMessage request, CancellationToken token = default);
 
-    Task<byte[]> GetByteArrayAsync(StringUri? requestUri, CancellationToken cancellationToken = default);
-
-    byte[] IBytesRetriever.GetBytes(string url, LongExtent extent)
+    ReadOnlyMemory<byte> IBytesRetriever.GetBytes(string url, LongExtent extent)
     {
         return this.GetByteRange(url, extent.Start, extent.Length);
     }
 
-    Task<byte[]> IBytesRetriever.GetBytesAsync(string url, LongExtent? extent = null)
+    Task<ReadOnlyMemory<byte>> IBytesRetriever.GetBytesAsync(string url, LongExtent? extent = null)
     {
         if (extent == null)
         {
@@ -47,26 +45,27 @@ public interface IInnerHttpClient : IHttpClient
     new Uri BaseAddress { get; set; }
 }
 
-public record QueryAugmentingHttpClientWrapper(IHttpClient Inner, bool FileMode = false) : IHttpClient
+public record QueryAugmentingHttpClientWrapper(IHttpClient Inner, bool FileMode = false, Action<HttpResponseMessage> OnResponse = null) : IHttpClient
 {
     public Uri BaseAddress { get; set; } = Inner.BaseAddress?.EnsureTrailingSlash();
-
-    public Task<byte[]> GetByteArrayAsync(StringUri? requestUri, CancellationToken cancellationToken = default)
-    {
-        requestUri = GetAugmentedUri(requestUri?.UriValue);
-        return Inner.GetByteArrayAsync(requestUri, cancellationToken);
-    }
 
     public HttpResponseMessage SendMessage(HttpRequestMessage request, CancellationToken token = default)
     {
         request.RequestUri = GetAugmentedUri(request.RequestUri);
-        return Inner.SendMessage(request, token);
+        return HandleResponse(Inner.SendMessage(request, token));
     }
 
-    public Task<HttpResponseMessage> SendMessageAsync(HttpRequestMessage request, CancellationToken token = default)
+    public async Task<HttpResponseMessage> SendMessageAsync(HttpRequestMessage request, CancellationToken token = default)
     {
         request.RequestUri = GetAugmentedUri(request.RequestUri);
-        return Inner.SendMessageAsync(request, token);
+        return HandleResponse(await Inner.SendMessageAsync(request, token));
+    }
+
+    private HttpResponseMessage HandleResponse(HttpResponseMessage response)
+    {
+        OnResponse?.Invoke(response);
+        response.EnsureSuccessStatusCode();
+        return response;
     }
 
     private Uri? GetAugmentedUri(Uri? uri)
@@ -167,20 +166,25 @@ public static class HttpClientExtensions
         return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
     }
 
-    public static async Task<byte[]> GetByteRangeAsync(
+    public static Task<ReadOnlyMemory<byte>> GetByteArrayAsync(this IHttpClient client, StringUri? requestUri, CancellationToken cancellationToken = default)
+    {
+        return client.GetByteRangeAsync(requestUri?.AsString(), -1, -1);
+    }
+
+    public static async Task<ReadOnlyMemory<byte>> GetByteRangeAsync(
         this IHttpClient client,
         string url,
         long position,
-        long count)
+        long count,
+        CancellationToken token = default)
     {
-
         var message = new HttpRequestMessage(HttpMethod.Get, url);
         if (position >= 0 && count >= 0)
         {
             message.Headers.Range = new RangeHeaderValue(position, position + count - 1);
         }
 
-        var response = await client.SendMessageAsync(message).ConfigureAwait(false);
+        var response = await client.SendMessageAsync(message, token).ConfigureAwait(false);
 
         Placeholder.DebugLog("Got response");
 
@@ -189,7 +193,7 @@ public static class HttpClientExtensions
             return content.Bytes;
         }
 
-        return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+        return await response.Content.ReadAsByteArrayAsync(token).ConfigureAwait(false);
     }
 
     public static Extent? ExtractRange(this HttpRequestMessage request)

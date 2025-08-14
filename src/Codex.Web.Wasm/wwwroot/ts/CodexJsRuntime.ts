@@ -4,6 +4,19 @@ export function GetHRef() {
     return globalThis.window.location.href;
 }
 
+declare global {
+    interface Window {
+        rootUrl: string;
+    }
+}
+
+export function GetApplicationArgumentsJson() : string {
+    return JSON.stringify({
+        rootUrl: globalThis.window.rootUrl,
+        startUrl: globalThis.window.location.href,
+    });
+}
+
 export function SetLeftPane(innerHtml: string) {
     CodexPage.setLeftPane(innerHtml);
 }

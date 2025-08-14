@@ -1,4 +1,4 @@
-﻿using Codex.Utilities;
+using Codex.Utilities;
 
 namespace Codex.Integration.Tests;
 

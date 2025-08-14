@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Web;
 using Codex.ObjectModel;
 using Codex.Sdk.Search;

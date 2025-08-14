@@ -5,6 +5,7 @@ using Codex.Storage.BlockLevel;
 using Codex.Utilities;
 using Codex.Utilities.Zip;
 using Codex.Web.Common;
+using DotNext.IO;
 using Lucene.Net.Store;
 
 using IODirectory = System.IO.Directory;
@@ -56,6 +57,7 @@ namespace Codex.Lucene.Search
             AsyncOut<CachingPageFileProvider> CachingProvider = null,
             RefAction<IHttpClient> UpdateClient = null)
         {
+            public Action<HttpClientKind, HttpResponseMessage> OnClientResponse { get; set; }
             public Func<HttpClientKind, IInnerHttpClient> GetClient { get; set; } = SdkFeatures.GetClient;
             public bool ShouldUpdate() => Update ?? Store;
         }
@@ -81,6 +83,7 @@ namespace Codex.Lucene.Search
             configuration.UpdateClient?.Invoke(new(ref client));
 
             IBytesRetriever retriever = client;
+            SdkFeatures.IndexRetrieverTestHook.Value?.Set(retriever);
             configuration.Accessor.Set(new HttpPageFileAccessor(
                 indexRootUrl: "",
                 retriever));
@@ -106,7 +109,11 @@ namespace Codex.Lucene.Search
                     }
                 });
 
-                return new QueryAugmentingHttpClientWrapper(client, fileMode);
+                return new QueryAugmentingHttpClientWrapper(client, fileMode, configuration.OnClientResponse?.Then(onClientResponse => Out.Action<HttpResponseMessage>(rsp =>
+                {
+                    rsp = SdkFeatures.IndexClientResponsePreprocessor.Value?.Invoke(kind, rsp) ?? rsp;
+                    onClientResponse(kind, rsp);
+                })));
             }
 
             configuration.Info.Set(info);
@@ -152,9 +159,10 @@ namespace Codex.Lucene.Search
             };
         }
 
-        private static Url GetAddress(Uri uri)
+        private static Uri GetAddress(Uri uri)
         {
-            Url result = uri.EnsureTrailingSlash();
+            Uri result = uri.EnsureTrailingSlash();
+            result = SdkFeatures.ProcessIndexAddress?.Invoke(uri) ?? uri;
             return result;
         }
 

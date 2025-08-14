@@ -1,4 +1,4 @@
-﻿using Codex.Utilities;
+using Codex.Utilities;
 using J2N.Numerics;
 using Lucene.Net.Diagnostics;
 using Lucene.Net.Support;

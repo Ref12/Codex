@@ -1,9 +1,14 @@
 using System.IO.Compression;
+using System.Net;
+using System.Net.Http.Headers;
+using Codex.Configuration;
 using Codex.Sdk;
 using Codex.Utilities;
+using Microsoft.Net.Http.Headers;
 
 namespace Codex.Application.Verbs;
 
+using static CodexConstants;
 using static SdkPathUtilities;
 
 [Verb("deployweb", HelpText = "Deploy Codex web files.")]
@@ -33,8 +38,11 @@ public record DeployWebOperation : OperationBase
     [Option('m', "mode", Required = true, HelpText = "The execution mode")]
     public AppMode Mode { get; set; }
 
-    [Option('i', "index", Required = true, HelpText = "The source for index files or api")]
+    [Option('i', "index", Required = true, HelpText = "The source for index files or api. If --use-custom-source is specified, this points to a file containing the index source json.")]
     public string IndexSource { get; set; }
+
+    [Option("use-custom-source", Required = false, HelpText = "Indicates that IndexSource points to a file containing custom index source json info.")]
+    public bool UseCustomSource { get; set; }
 
     [Option('g', "ignore", Required = false, HelpText = "The ignore file indicating files not copy")]
     public string? IgnoreFile { get; set; }
@@ -71,6 +79,12 @@ public record DeployWebOperation : OperationBase
 
         ignoreLines.Add("/overlay/");
 
+        var location = new IndexSourceLocation()
+        {
+            Url = IndexSource,
+            ReloadHeader = HeaderNames.LastModified,
+        };
+
         if (Mode == AppMode.server)
         {
             // Remove managed assemblies
@@ -78,22 +92,31 @@ public record DeployWebOperation : OperationBase
             ignoreLines.Add("/managed/");
             ignoreLines.Add("*.dll*");
             ignoreLines.Add("*.pdb*");
+            ignoreLines.Add("*.wasm");
 
             IndexSource = IndexSource.TrimEnd('/');
             copies.Add(() => CopyFile("overlay/clientmain.js", "main.js", transformText: s => s.Replace("$(PageApiRoot)", IndexSource)));
         }
         else
         {
-            copies.Add(() => CopyFile("overlay/sources.txt", "sources.txt", transformText: s => s.Replace("$(IndexRoot)", IndexSource)));
             if (Host == AppContentHost.cloudflare)
             {
-                copies.Add(() => CopyFile("overlay/cloudflare.wasm.headers.txt", "_headers", generateCompressionVariants: false));
+                copies.Add(() => CopyFile("overlay/cloudflare.wasm.headers.txt", "_headers", generateCompressionVariants: false, transformText: s =>
+                {
+                    return s.ReplaceIgnoreCase("$(LastModified)", HeaderUtilities.FormatDate(location.Timestamp, quoted: false));
+                }));
             }
             else
             {
                 copies.Add(() => CopyFile("ts/js/serviceworker.boot.js", "serviceworker.boot.js"));
             }
         }
+
+
+        copies.Add(() => CopyFile(
+            UseCustomSource ? IndexSource : CodexSourceFileName,
+            CodexSourceFileName,
+            transformText: s => location.SerializeEntity(flags: JsonFlags.Indented)));
 
         var ignore = GitIgnore.Parse(ignoreLines);
 

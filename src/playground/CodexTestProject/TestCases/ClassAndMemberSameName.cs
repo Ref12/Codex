@@ -1,4 +1,4 @@
-﻿namespace CodexTestProject;
+namespace CodexTestProject;
 
 public class Other1
 {

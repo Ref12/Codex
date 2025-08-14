@@ -1,4 +1,4 @@
-﻿namespace CodexIpc {
+namespace CodexIpc {
     export class PromiseCompletionSource<T> {
         Resolve: (value: T) => void;
         Reject: (reason:any) => void;

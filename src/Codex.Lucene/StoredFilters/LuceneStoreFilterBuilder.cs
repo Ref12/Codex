@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using Codex.Storage;
 using Codex.Utilities;
 using Lucene.Net.QueryParsers.Xml;

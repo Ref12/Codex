@@ -88,6 +88,7 @@
 
     <PackageVersion Include="Microsoft.FASTER.Core" Version="2.6.5" />
 
+    <PackageVersion Include="Microsoft.Net.Http.Headers" Version="2.3.4" />
     <PackageVersion Include="Microsoft.NET.WebAssembly.Threading" Version="7.0.0" Condition="'$(TargetFramework)' == 'net7.0'" />
     <PackageVersion Include="Microsoft.NET.WebAssembly.Threading" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
     <PackageVersion Include="Microsoft.NET.WebAssembly.Threading" Version="9.0.7" Condition="'$(TargetFramework)' == 'net9.0'" />

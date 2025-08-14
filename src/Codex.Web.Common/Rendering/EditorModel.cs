@@ -1,4 +1,4 @@
-﻿using Codex.View;
+using Codex.View;
 
 namespace Codex.Web.Mvc.Rendering
 {

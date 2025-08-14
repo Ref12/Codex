@@ -1,4 +1,4 @@
-﻿using Codex.Sdk.Utilities;
+using Codex.Sdk.Utilities;
 using Codex.Utilities;
 using System;
 using System.Collections.Generic;

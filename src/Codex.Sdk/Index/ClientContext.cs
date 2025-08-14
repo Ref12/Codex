@@ -1,4 +1,4 @@
-﻿namespace Codex.Search
+namespace Codex.Search
 {
     public class ClientContext<TClient>
         where TClient : IClient

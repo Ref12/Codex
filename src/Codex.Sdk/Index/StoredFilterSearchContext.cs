@@ -1,4 +1,4 @@
-﻿using Codex.ObjectModel;
+using Codex.ObjectModel;
 using Codex.Sdk.Search;
 
 namespace Codex.Search

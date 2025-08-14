@@ -18,6 +18,8 @@
   <ItemGroup>
     <PackageReference Include="IgnoresAccessChecksToGenerator" />
 
+    <PackageReference Include="Microsoft.Net.Http.Headers" />
+
     <PackageReference Include="CommunityToolkit.HighPerformance" />
     <PackageReference Include="MessagePack.Annotations" />
     <PackageReference Include="Ref12.MessagePack" />

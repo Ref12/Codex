@@ -1,4 +1,4 @@
-﻿namespace System.Net.Http
+namespace System.Net.Http
 {
     public record struct StringUri(string StringValue = null, Uri UriValue = null)
     {

@@ -1,4 +1,4 @@
-﻿namespace Codex.Utilities
+namespace Codex.Utilities
 {
     public record struct ReferenceEquatable<T>(T Value) : IEquatable<ReferenceEquatable<T>>
     {

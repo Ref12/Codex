@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using static Codex.Utilities.SourceControlUri;
 
 namespace Codex.Utilities;

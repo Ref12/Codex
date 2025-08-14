@@ -1,4 +1,4 @@
-﻿namespace Codex.Integration.Tests;
+namespace Codex.Integration.Tests;
 public class Program
 {
     static void Main(string[] args)

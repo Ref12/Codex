@@ -1,4 +1,4 @@
-﻿using Codex.Lucene.Framework.AutoPrefix;
+using Codex.Lucene.Framework.AutoPrefix;
 using Codex.Search;
 using Codex.Utilities;
 using Lucene.Net;
