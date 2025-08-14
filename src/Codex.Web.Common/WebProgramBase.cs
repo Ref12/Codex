@@ -130,7 +130,7 @@ public class WebProgramBase(WebProgramArguments args) : CodexProgramBase, IRepos
         LuceneConfiguration configuration;
         IndexSource = args.IndexSource ?? await GetIndexSourceAsync();
         var indexSourceUrl = IndexSource.Url = GetIndexSourceUrl(IndexSource);
-        ResolvedIndexSourceUrl = indexSourceUrl = indexSourceUrl.ReplaceIgnoreCase("$(timestamp)", IndexSource.Timestamp.ToPathString());
+        ResolvedIndexSourceUrl = indexSourceUrl = indexSourceUrl.ReplaceIgnoreCase("{timestamp}", IndexSource.Timestamp.ToPathString());
         Console.WriteLine($"[{Thread.CurrentThread.ManagedThreadId}] Loading index: {IndexSource}");
         indexSourceUrl = indexSourceUrl.Trim();
         {

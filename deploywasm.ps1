@@ -9,4 +9,4 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-& "$CodexExeDir/Codex.exe" deployweb -s "$WasmPublishDir/wwwroot" -t "$OutputDir" -h pages -m wasm -i "index?_ts$(timestamp)=1" @RemainingArgs
+& "$CodexExeDir/Codex.exe" deployweb -s "$WasmPublishDir/wwwroot" -t "$OutputDir" -h pages -m wasm -i "index?_ts{timestamp}=1" @RemainingArgs
