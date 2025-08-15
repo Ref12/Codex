@@ -47,7 +47,7 @@ public interface IInnerHttpClient : IHttpClient
 
 public record QueryAugmentingHttpClientWrapper(IHttpClient Inner, bool FileMode = false, Action<HttpResponseMessage> OnResponse = null) : IHttpClient
 {
-    public Uri BaseAddress { get; set; } = Inner.BaseAddress?.EnsureTrailingSlash();
+    public Uri BaseAddress { get; } = Inner.BaseAddress?.EnsureTrailingSlash();
 
     public HttpResponseMessage SendMessage(HttpRequestMessage request, CancellationToken token = default)
     {

@@ -35,7 +35,7 @@ using M = Codex.ObjectModel.Implementation.SearchMappings;
 namespace Codex.Integration.Tests;
 
 using static CodexConstants;
-public record AnalyzeTestProject(ITestOutputHelper Output) : AnalyzeTestProjectBase(Output)
+public partial record AnalyzeTestProject(ITestOutputHelper Output) : AnalyzeTestProjectBase(Output)
 {
     [Fact]
     public async Task TestReindexClean()

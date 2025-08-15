@@ -27,15 +27,15 @@ public class WebProgramBase(WebProgramArguments args) : CodexProgramBase, IRepos
     public async Task RunAsync(ViewModelAddress? address = null)
     {
         Controller.RepositoryIndexer = this;
-
-        var client = new QueryAugmentingHttpClientWrapper(GetClient(default));
-        client.BaseAddress = GetBaseAddress();
+        var innerClient = GetClient(default);
+        innerClient.BaseAddress = GetBaseAddress().EnsureTrailingSlash();
+        var client = new QueryAugmentingHttpClientWrapper(innerClient);
+        Client = client;
         SdkFeatures.HttpClient = client;
         SdkFeatures.GetClient = GetClient;
 
-        var codex = await GetCodexAsync(address);
+        App.CodexService ??= await GetCodexAsync(address);
         App.Controller = Controller;
-        App.CodexService = codex;
         //if (address != null)
         //{
         //    await address.NavigateAsync(App, ViewModelAddress.InferMode.Startup);
@@ -44,7 +44,7 @@ public class WebProgramBase(WebProgramArguments args) : CodexProgramBase, IRepos
 
     public CodexPage GetPage()
     {
-        return new CodexPage(App.CodexService, App);
+        return new CodexPage(this);
     }
 
     private Uri GetBaseAddress()

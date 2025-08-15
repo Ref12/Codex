@@ -2,6 +2,7 @@ using Codex.Lucene.Search;
 using Codex.Sdk.Search;
 using Codex.Storage;
 using Codex.Utilities;
+using Codex.Web.Common;
 using Codex.Web.Mvc.Rendering;
 using Codex.Web.Wasm;
 
@@ -19,6 +20,12 @@ namespace Codex.View
         {
         }
 
+        public CodexPage(WebProgramBase site)
+            : this(site.App.CodexService, site.App)
+        {
+            Site = site;
+        }
+
         public async Task<INavigateItem> SelectLeftItem(int index)
         {
             var item = View.LeftPane.Content.GetItems().ElementAt(index);
@@ -27,6 +34,10 @@ namespace Codex.View
         }
 
         public IStableIdStorage StableIdStorage { get; set; }
+
+        public WebViewModelController? WebViewModelController => App.Controller as WebViewModelController;
+
+        public WebProgramBase Site { get; init; }
 
         public Task Search(string text) => App.SearchTextChanged(text);
 

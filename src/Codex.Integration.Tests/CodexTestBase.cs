@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Azure.Storage.Blobs;
 using Codex.Application.Verbs;
 using Codex.Lucene.Search;
 using Codex.Sdk;
@@ -143,7 +144,7 @@ public record CodexTestBase : IDisposable
 
         await program.RunAsync();
 
-        return program; ;
+        return program;
     }
 
     public CodexPage CreateCodexApp(IngestOperation indexOperation,
@@ -217,86 +218,113 @@ public record CodexTestBase : IDisposable
     public CodexPage CreateCodexApp(string indexDirectory,
         Func<CodexAppOptions, CodexAppOptions> updateOptions = null)
     {
-        var options = new CodexAppOptions();
-        options = updateOptions?.Invoke(options) ?? options;
+        var page = getPage();
+        page.WebViewModelController?.TrackSourceReferenceHtml = true;
+        return page;
 
-        if (PathUtilities.ToUriOrPath(indexDirectory, out var uri, out var path))
+        CodexPage getPage()
         {
-            // For uri's we need to use paging logic
-            options.UsePaging = true;
-            options.ConfigurePaging = options.ConfigurePaging.ApplyBefore(pc => pc with
+            var options = new CodexAppOptions();
+            options = updateOptions?.Invoke(options) ?? options;
+
+            if (options.CreateSite)
             {
-                CacheLimit = 100_000,
-            });
-        }
-
-        ICodex getCodex()
-        {
-            {
-                LuceneConfiguration configuration;
-
-                if (options.UsePaging
-                    || options.TrackingClient != null)
+                var arguments = new WebProgramArguments()
                 {
-                    if (options.ValidatePaging)
+                    RootUrl = new Uri("https://codex.test"),
+                    StartUrl = new Uri("https://codex.test"),
+                    IndexSource = new Configuration.IndexSourceLocation()
                     {
-                        var configurePaging = options.ConfigurePaging ?? (pc => pc);
-                        options.ConfigurePaging = pc =>
-                        {
-                            pc = pc with { Validating = true, ValidatingDirectory = options.ValidatingIndexDirectory ?? indexDirectory };
-                            pc = configurePaging.Invoke(pc);
-                            return pc;
-                        };
+                        Url = indexDirectory,
                     }
+                };
 
-                    if (options.TrackingClient != null)
-                    {
-                        var configurePaging = options.ConfigurePaging ?? (pc => pc);
-                        options.ConfigurePaging = pc =>
-                        {
-                            pc = pc with
-                            {
-                                UpdateClient = client =>
-                                {
-                                    var trackingClient = options.TrackingClient;
-                                    trackingClient.Inner = client.Value;
-                                    client.Value = trackingClient;
-                                }
-                            };
-                            pc = configurePaging.Invoke(pc);
 
-                            return pc;
-                        };
-                    }
+                var program = new WebProgramBase(arguments);
 
-                    configuration = CreatePagingConfigurationAsync(
-                        indexDirectory,
-                        options.ConfigurePaging).GetAwaiter().GetResult();
-                }
-                else
-                {
-                    configuration = new LuceneConfiguration(indexDirectory);
-                }
+                program.RunAsync().GetAwaiter().GetResult();
 
-                if (options.AddSourceRetriever)
-                {
-                    configuration.SourceTextRetriever = new HttpClientSourceTextRetriever();
-                }
-
-                configuration.DefaultAccessLevel = ObjectModel.RepoAccess.Internal;
-
-                var codex = new LuceneCodex(configuration);
-                return codex;
+                return new CodexPage(program);
             }
+
+            if (PathUtilities.ToUriOrPath(indexDirectory, out var uri, out var path))
+            {
+                // For uri's we need to use paging logic
+                options.UsePaging = true;
+                options.ConfigurePaging = options.ConfigurePaging.ApplyBefore(pc => pc with
+                {
+                    CacheLimit = 100_000,
+                });
+            }
+
+            ICodex getCodex()
+            {
+                {
+                    LuceneConfiguration configuration;
+
+                    if (options.UsePaging
+                        || options.TrackingClient != null)
+                    {
+                        if (options.ValidatePaging)
+                        {
+                            var configurePaging = options.ConfigurePaging ?? (pc => pc);
+                            options.ConfigurePaging = pc =>
+                            {
+                                pc = pc with { Validating = true, ValidatingDirectory = options.ValidatingIndexDirectory ?? indexDirectory };
+                                pc = configurePaging.Invoke(pc);
+                                return pc;
+                            };
+                        }
+
+                        if (options.TrackingClient != null)
+                        {
+                            var configurePaging = options.ConfigurePaging ?? (pc => pc);
+                            options.ConfigurePaging = pc =>
+                            {
+                                pc = pc with
+                                {
+                                    UpdateClient = client =>
+                                    {
+                                        var trackingClient = options.TrackingClient;
+                                        trackingClient.Inner = client.Value;
+                                        client.Value = trackingClient;
+                                    }
+                                };
+                                pc = configurePaging.Invoke(pc);
+
+                                return pc;
+                            };
+                        }
+
+                        configuration = CreatePagingConfigurationAsync(
+                            indexDirectory,
+                            options.ConfigurePaging).GetAwaiter().GetResult();
+                    }
+                    else
+                    {
+                        configuration = new LuceneConfiguration(indexDirectory);
+                    }
+
+                    if (options.AddSourceRetriever)
+                    {
+                        configuration.SourceTextRetriever = new HttpClientSourceTextRetriever();
+                    }
+
+                    configuration.DefaultAccessLevel = ObjectModel.RepoAccess.Internal;
+
+                    var codex = new LuceneCodex(configuration);
+                    return codex;
+                }
+            }
+
+            var codex = getCodex();
+
+            var app = new MainController();
+            app.Controller = new WebViewModelController(app);
+            app.CodexService = codex;
+
+            return new CodexPage(codex, app, app.Controller.ViewModel);
         }
-
-        var codex = getCodex();
-
-        var app = new MainController();
-        app.Controller = new WebViewModelController(app) { TrackSourceReferenceHtml = true };
-        app.CodexService = codex;
-
-        return new CodexPage(codex, app, app.Controller.ViewModel);
     }
 
     public record CodexAppOptions
@@ -305,6 +333,8 @@ public record CodexTestBase : IDisposable
         public string ValidatingIndexDirectory { get; set; }
         public bool UsePaging { get; set; }
         public bool ValidatePaging { get; set; }
+        public bool CreateSite { get; set; }
+
         public Func<PagingConfiguration, PagingConfiguration> ConfigurePaging = null;
         public TrackingHttpClient TrackingClient { get; set; }
     }

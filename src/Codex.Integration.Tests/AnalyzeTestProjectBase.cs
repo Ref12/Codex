@@ -39,6 +39,7 @@ public record AnalyzeTestProjectBase(ITestOutputHelper Output) : CodexTestBase(O
         // Disabling till we fix zip upload / reading to yield results consistent with
         // file upload. Seems like content is changed somehow.
         public bool DisableBlockZipUpload = true;
+        public bool UploadFiles = false;
         public int ProjectIndex = 0;
         public ITestProjectData Project => Projects[ProjectIndex];
         public string ProjectDirectory => Project.ProjectDirectory;

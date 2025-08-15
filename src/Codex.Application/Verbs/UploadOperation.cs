@@ -47,10 +47,10 @@ public record UploadOperation : IndexReadOperationBase
     {
         if (!string.IsNullOrEmpty(BlobContainerSasUrl))
         {
-            var storage = new BlobObjectStorage(Logger, BlobContainerSasUrl, Root: "");
+            var storage = new BlobObjectStorage(Logger, BlobContainerSasUrl);
             storage.Initialize();
 
-            Logger.LogMessage($"Uploading to '{storage.Client.AccountName}' blob container '{storage.Client.Name}'");
+            Logger.LogMessage($"Uploading to '{storage.Folder.AccountName}' blob folder '{storage.Folder.BlobContainerName}'");
 
             await storage.UploadDirectory(UploadDirectory, ExcludedFiles);
         }

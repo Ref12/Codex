@@ -1,12 +1,15 @@
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Specialized;
 using Codex.Logging;
 using Codex.Utilities;
 
 namespace Codex.Storage;
 
-public record BlobObjectStorage(Logger Logger, string BlobSasUrl, string Root = "index") : IObjectStorage
+public record BlobObjectStorage(Logger Logger, string BlobSasUrl) : IObjectStorage
 {
-    public BlobContainerClient Client { get; private set; }
+    public BlobClient Folder { get; set; } = new BlobClient(new Uri(BlobSasUrl));
+
+    public string FolderPath => PathUtilities.UriCombine(Folder.BlobContainerName, Folder.Name);
     public void Dispose()
     {
     }
@@ -15,10 +18,17 @@ public record BlobObjectStorage(Logger Logger, string BlobSasUrl, string Root = 
     {
     }
 
+
     public void Initialize()
     {
-        Client = new BlobContainerClient(new Uri(BlobSasUrl));
-        
+        var blobUri = new BlobUriBuilder(new Uri(BlobSasUrl));
+
+    }
+
+    private BlobClient GetBlobClient(string relativePath)
+    {
+        var relativePathUrl = PathUtilities.UriCombine(Folder.Name, PathUtilities.AsUrlRelativePath(relativePath, encode: false));
+        return Folder.GetParentBlobContainerClient().GetBlobClient(relativePathUrl);
     }
 
     public Stream Load(string relativePath)
@@ -38,12 +48,11 @@ public record BlobObjectStorage(Logger Logger, string BlobSasUrl, string Root = 
         Placeholder.Todo("Avoid uploading if blob is unchanged");
         stream.Position = 0;
 
-        var relativePathUrl = PathUtilities.UriCombine(Root, PathUtilities.AsUrlRelativePath(relativePath, encode: false));
-        var blobClient = Client.GetBlobClient(relativePathUrl);
+        var blobClient = GetBlobClient(relativePath);
 
         var response = await blobClient.UploadAsync(stream, overwrite: true);
 
-        return relativePathUrl;
+        return blobClient.Name;
     }
 
     public async Task UploadDirectory(string localDirectory, IEnumerable<string> excludedFiles = null)
@@ -64,14 +73,13 @@ public record BlobObjectStorage(Logger Logger, string BlobSasUrl, string Root = 
         await Parallel.ForEachAsync(files, async (file, token) =>
         {
             var relativePath = PathUtilities.GetRelativePath(localDirectory, file);
-            var relativePathUrl = PathUtilities.UriCombine(Root, PathUtilities.AsUrlRelativePath(relativePath, encode: false));
             if (excludesFilesSet.Contains(file))
             {
                 Logger.LogMessage($"Skipping: {relativePath}");
                 return;
             }
 
-            var blobClient = Client.GetBlobClient(relativePathUrl);
+            var blobClient = GetBlobClient(relativePath);
 
 
             Logger.LogMessage($"Uploading: {relativePath}");
