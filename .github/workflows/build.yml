@@ -41,7 +41,6 @@ jobs:
 
   test:
     runs-on: windows-latest
-    needs: build
 
     steps:
     - name: Checkout repository
