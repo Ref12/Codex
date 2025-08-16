@@ -1,27 +1,48 @@
 using System.Reflection;
 using Codex.Application.Verbs;
 using Codex.Storage;
+using Codex.Utilities;
 
 namespace Codex.Application;
 
-public record CodexProgram : OperationBase
+public sealed record CodexProgram : CodexProgramBase
+{
+    public override async ValueTask<int?> TryRunSpecialAsync(string[] args)
+    {
+        if (CodexLegacyProgram.LegacyVerbNames.Contains(args.FirstOrDefault()))
+        {
+            var program = new CodexLegacyProgram();
+            return await program.RunAsync(args);
+        }
+
+        return null;
+    }
+}
+
+public record CodexProgramBase : OperationBase
 {
     public static Task<int> Main(params string[] args)
     {
         return new CodexProgram().RunAsync(args);
     }
 
+    public virtual ValueTask<int?> TryRunSpecialAsync(string[] args)
+    {
+        return ValueTask.FromResult<int?>(null);
+    }
+
     public async Task<int> RunAsync(params string[] args)
     {
         Arguments = args;
-        Console.WriteLine(Environment.CommandLine);
-        Console.WriteLine("Args");
-        Console.WriteLine(String.Join("\n", args));
-        if (CodexLegacyProgram.LegacyVerbNames.Contains(args.FirstOrDefault()))
+        if (!MiscUtilities.TryGetEnvironmentVariable("CODEX_DISABLE_PRINT_ARGS", out _))
         {
-            var program = new CodexLegacyProgram();
-            return await program.RunAsync(args);
+            Console.WriteLine(Environment.CommandLine);
+            Console.WriteLine("Args");
+            Console.WriteLine(String.Join("\n", args));
         }
+
+        var result = await TryRunSpecialAsync(args);
+        if (result.HasValue) return result.Value;
 
         ParserResult<object> parsedArgs = ParseArgs();
 

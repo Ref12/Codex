@@ -30,6 +30,17 @@ public partial record UtilitiesTests(ITestOutputHelper output) : CodexTestBase(o
 {
     private static ISpanSerializer<SmallIntArray> ValueArraySerializer = new BinaryItemSerializer<SmallIntArray>();
 
+    [Fact]
+    public void UriCombine()
+    {
+        test("https://local:234?hello=world", "relative/index", "https://local:234/relative/index?hello=world");
+
+        void test(string baseUri, string relativeUri, string expected, bool preserveBaseQuery = true, bool forcePreserveBaseQuery = false)
+        {
+            var actual = PathUtilities.Combine(baseUri, relativeUri, preserveBaseQuery, forcePreserveBaseQuery);
+            actual.ToString().Should().Be(expected);
+        }
+    }
 
     [Fact]
     public void AsymmetricEncryptionRoundtrip()

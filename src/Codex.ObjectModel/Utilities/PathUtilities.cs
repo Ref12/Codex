@@ -41,23 +41,40 @@ namespace Codex.Utilities
             }
         }
 
-        public static Url Combine(this Url uri, string relativeUri)
+        public static Url Combine(this Url baseUri, string relativeUri, bool preserveBaseQuery = true, bool forcePreserveBaseQuery = false)
         {
-            var builder = uri.UriBuilder;
-            builder.Path = UriCombine(builder.Path, relativeUri);
-            return builder.Uri;
+            return baseUri.Uri.Combine(relativeUri, preserveBaseQuery, forcePreserveBaseQuery);
         }
 
-        public static Uri Combine(this Uri uri, string relativeUri)
+        public static Uri Combine(this Uri baseUri, string relativeUri, bool preserveBaseQuery = true, bool forcePreserveBaseQuery = false)
         {
-            var builder = new UriBuilder(uri);
-            builder.Path = UriCombine(builder.Path, relativeUri);
-            return builder.Uri;
+            if ((!forcePreserveBaseQuery || string.IsNullOrEmpty(baseUri.Query))
+                && relativeUri?.Contains(":") == true)
+            {
+                return new Uri(relativeUri);
+            }
+
+            var result = new Uri(baseUri.EnsureTrailingSlash(), relativeUri);
+            if (preserveBaseQuery && !string.IsNullOrEmpty(baseUri.Query))
+            {
+                var builder = new UriBuilder(result);
+                builder.Query = CombineQuery(baseUri.Query, builder.Query);
+                return builder.Uri;
+            }
+
+            return result;
+        }
+
+        public static string CombineQuery(string query1, string query2)
+        {
+            if (string.IsNullOrEmpty(query1)) return query2;
+            else if (string.IsNullOrEmpty(query2)) return query1;
+            else return $"{query1}&{query2.AsSpan().TrimStart('?')}";
         }
 
         public static Uri RemoveQuery(Url uri)
         {
-            return new Uri(uri.Uri.GetLeftPart(UriPartial.Path));
+            return new Uri(uri.UriString.AsSpan().SubstringBeforeFirstIndexOfAny("?").ToString());
         }
 
         public static Uri WithoutQuery(this Uri uri)
